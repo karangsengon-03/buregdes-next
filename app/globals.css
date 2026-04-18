@@ -1,0 +1,231 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── CSS Variables — Dark Mode (default) ─────────────── */
+:root,
+[data-theme="dark"] {
+  --bg-app:          #0D1B2A;
+  --bg-card:         #1B2B3E;
+  --bg-sidebar:      #0A1628;
+  --bg-elevated:     #243447;
+  --bg-input:        #1B2B3E;
+  --bg-table-head:   #0A1628;
+  --bg-table-even:   #162336;
+  --bg-table-odd:    #1B2B3E;
+  --bg-hover:        rgba(59,130,246,0.08);
+
+  --accent:          #3B82F6;
+  --accent-hover:    #2563EB;
+  --accent-subtle:   rgba(59,130,246,0.12);
+
+  --text-primary:    #F1F5F9;
+  --text-secondary:  #94A3B8;
+  --text-muted:      #475569;
+  --text-accent:     #93C5FD;
+  --text-sidebar:    #94A3B8;
+  --text-sidebar-active: #FFFFFF;
+
+  --border:          #1E3A5F;
+  --border-focus:    #3B82F6;
+  --border-input:    #1E3A5F;
+
+  --success:         #10B981;
+  --warning:         #F59E0B;
+  --danger:          #EF4444;
+
+  --locked-row:      rgba(245,158,11,0.12);
+  --locked-badge:    rgba(245,158,11,0.2);
+  --locked-text:     #FBBF24;
+
+  --shadow-card:     0 8px 32px rgba(0,0,0,0.45);
+  --shadow-sidebar:  4px 0 20px rgba(0,0,0,0.4);
+  --shadow-modal:    0 20px 60px rgba(0,0,0,0.5);
+
+  --overlay-bg:      rgba(10,22,40,0.85);
+  --scrollbar:       #1E3A5F;
+  --scrollbar-thumb: #3B82F6;
+
+  --stripe-gradient: linear-gradient(90deg, #F59E0B, #EF4444, #10B981, #3B82F6);
+  --stripe-h:        4px;
+}
+
+/* ── CSS Variables — Light Mode ──────────────────────── */
+[data-theme="light"] {
+  --bg-app:          #F0F4F8;
+  --bg-card:         #FFFFFF;
+  --bg-sidebar:      #1A3C5E;
+  --bg-elevated:     #FFFFFF;
+  --bg-input:        #FFFFFF;
+  --bg-table-head:   #1A3C5E;
+  --bg-table-even:   #F8FAFC;
+  --bg-table-odd:    #FFFFFF;
+  --bg-hover:        rgba(37,99,235,0.05);
+
+  --accent:          #2563EB;
+  --accent-hover:    #1A3C5E;
+  --accent-subtle:   rgba(37,99,235,0.08);
+
+  --text-primary:    #0F172A;
+  --text-secondary:  #475569;
+  --text-muted:      #94A3B8;
+  --text-accent:     #2563EB;
+  --text-sidebar:    rgba(255,255,255,0.75);
+  --text-sidebar-active: #FFFFFF;
+
+  --border:          #E2E8F0;
+  --border-focus:    #2563EB;
+  --border-input:    #CBD5E1;
+
+  --success:         #10B981;
+  --warning:         #F59E0B;
+  --danger:          #EF4444;
+
+  --locked-row:      #FEF9C3;
+  --locked-badge:    #FDE68A;
+  --locked-text:     #92400E;
+
+  --shadow-card:     0 4px 20px rgba(0,0,0,0.10);
+  --shadow-sidebar:  4px 0 16px rgba(0,0,0,0.15);
+  --shadow-modal:    0 20px 60px rgba(0,0,0,0.15);
+
+  --overlay-bg:      rgba(0,0,0,0.55);
+  --scrollbar:       #E2E8F0;
+  --scrollbar-thumb: #2563EB;
+}
+
+/* ── Base ─────────────────────────────────────────────── */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg-app);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background 0.3s, color 0.3s;
+}
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--scrollbar); }
+::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 3px; }
+
+*:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+@layer utilities {
+  .font-mono-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+  }
+  .stripe-bar {
+    height: var(--stripe-h);
+    background: var(--stripe-gradient);
+    flex-shrink: 0;
+  }
+  .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.18);
+    transform: scale(0);
+    animation: rippleAnim 0.55s ease-out;
+    pointer-events: none;
+    width: 80px;
+    height: 80px;
+    margin-left: -40px;
+    margin-top: -40px;
+  }
+  @keyframes rippleAnim {
+    to { transform: scale(4); opacity: 0; }
+  }
+}
+
+.br-input {
+  width: 100%;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  border: 1.5px solid var(--border-input);
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+.br-input::placeholder { color: var(--text-muted); }
+.br-input:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px var(--accent-subtle);
+}
+
+.br-btn-primary {
+  width: 100%;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 13px 20px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.br-btn-primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+  box-shadow: 0 4px 16px rgba(59,130,246,0.35);
+}
+.br-btn-primary:active:not(:disabled) { transform: scale(0.98); }
+.br-btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.br-btn-ghost {
+  width: 100%;
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 11px 20px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.br-btn-ghost:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent);
+  color: var(--text-primary);
+}
+
+.br-toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: var(--shadow-modal);
+  opacity: 0;
+  transition: opacity 0.25s, transform 0.25s;
+  z-index: 9999;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.br-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
