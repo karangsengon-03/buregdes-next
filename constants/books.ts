@@ -1,81 +1,95 @@
-// ─────────────────────────────────────────────
-// BuRegDes Next — Book Definitions
-// Struktur RTDB: data/{year}/tableData/{bookId}
-// ─────────────────────────────────────────────
+// ──────────────────────────────────────────────
+//  BuRegDes Next — Book Constants
+//  (update Session 2: shortName, DEFAULT_YEAR)
+// ──────────────────────────────────────────────
 
-import { BookDef } from '@/types'
+import type { BookDef } from '@/types';
 
 export const BOOKS: BookDef[] = [
   {
-    id: 'A1', kode: 'A.1', judul: 'Buku Peraturan Desa',
-    cols: [
-      { k: 'no',             l: 'No',                                          w: '5%',   ro: true },
-      { k: 'noDitetapkan',   l: 'Nomor Ditetapkan',                            w: '15%' },
-      { k: 'tglDitetapkan',  l: 'Tanggal Ditetapkan',                          w: '14%' },
-      { k: 'tentang',        l: 'Tentang',                                     w: '300px' },
-      { k: 'noDiundangkan',  l: 'Nomor Diundangkan dalam Lembaran Desa',       w: '13%' },
-      { k: 'tglDiundangkan', l: 'Tanggal Diundangkan dalam Lembaran Desa',     w: '13%' },
-      { k: 'ket',            l: 'Ket.',                                        w: '7%' },
+    id: 'A.1',
+    name: 'Buku Peraturan di Desa',
+    shortName: 'Peraturan Desa',
+    columns: [
+      { key: 'no', label: 'No', type: 'number', width: 48 },
+      { key: 'nomorPeraturan', label: 'Nomor Peraturan', type: 'mono', width: 140 },
+      { key: 'tentang', label: 'Tentang', type: 'text' },
+      { key: 'tanggalPenetapan', label: 'Tgl Penetapan', type: 'date', width: 110 },
+      { key: 'keterangan', label: 'Keterangan', type: 'text' },
     ],
   },
   {
-    id: 'A2', kode: 'A.2', judul: 'Buku Peraturan Kepala Desa',
-    cols: [
-      { k: 'no',             l: 'No',                                          w: '5%',   ro: true },
-      { k: 'noDitetapkan',   l: 'Nomor Ditetapkan',                            w: '15%' },
-      { k: 'tglDitetapkan',  l: 'Tanggal Ditetapkan',                          w: '14%' },
-      { k: 'tentang',        l: 'Tentang',                                     w: '300px' },
-      { k: 'noDiundangkan',  l: 'Nomor Diundangkan dalam Berita Desa',         w: '13%' },
-      { k: 'tglDiundangkan', l: 'Tanggal Diundangkan dalam Berita Desa',       w: '13%' },
-      { k: 'ket',            l: 'Ket.',                                        w: '7%' },
+    id: 'A.2',
+    name: 'Buku Keputusan Kepala Desa',
+    shortName: 'Keputusan Kades',
+    columns: [
+      { key: 'no', label: 'No', type: 'number', width: 48 },
+      { key: 'nomorKeputusan', label: 'Nomor SK', type: 'mono', width: 140 },
+      { key: 'tentang', label: 'Tentang', type: 'text' },
+      { key: 'tanggalPenetapan', label: 'Tgl Penetapan', type: 'date', width: 110 },
+      { key: 'keterangan', label: 'Keterangan', type: 'text' },
     ],
   },
   {
-    id: 'A3', kode: 'A.3', judul: 'Buku Peraturan Bersama Kepala Desa',
-    cols: [
-      { k: 'no',             l: 'No',                                          w: '5%',   ro: true },
-      { k: 'noDitetapkan',   l: 'Nomor Ditetapkan',                            w: '15%' },
-      { k: 'tglDitetapkan',  l: 'Tanggal Ditetapkan',                          w: '14%' },
-      { k: 'tentang',        l: 'Tentang',                                     w: '300px' },
-      { k: 'noDiundangkan',  l: 'Nomor Diundangkan dalam Berita Desa',         w: '13%' },
-      { k: 'tglDiundangkan', l: 'Tanggal Diundangkan dalam Berita Desa',       w: '13%' },
-      { k: 'ket',            l: 'Ket.',                                        w: '7%' },
+    id: 'A.3',
+    name: 'Buku Inventaris dan Kekayaan Desa',
+    shortName: 'Inventaris Desa',
+    columns: [
+      { key: 'no', label: 'No', type: 'number', width: 48 },
+      { key: 'namaBarang', label: 'Nama Barang', type: 'text' },
+      { key: 'jumlah', label: 'Jumlah', type: 'number', width: 80 },
+      { key: 'satuan', label: 'Satuan', type: 'text', width: 80 },
+      { key: 'kondisi', label: 'Kondisi', type: 'text', width: 100 },
+      { key: 'keterangan', label: 'Keterangan', type: 'text' },
     ],
   },
   {
-    id: 'A4', kode: 'A.4', judul: 'Buku Keputusan Kepala Desa',
-    cols: [
-      { k: 'no',            l: 'No',                 w: '8%',   ro: true },
-      { k: 'noDitetapkan',  l: 'Nomor Ditetapkan',  w: '15%' },
-      { k: 'tglDitetapkan', l: 'Tanggal Ditetapkan',w: '14%' },
-      { k: 'tentang',       l: 'Tentang',            w: '300px' },
-      { k: 'ket',           l: 'Ket.',               w: '7%' },
+    id: 'A.4',
+    name: 'Buku Aparat Pemerintah Desa',
+    shortName: 'Aparat Desa',
+    columns: [
+      { key: 'no', label: 'No', type: 'number', width: 48 },
+      { key: 'nama', label: 'Nama', type: 'text' },
+      { key: 'jabatan', label: 'Jabatan', type: 'text', width: 150 },
+      { key: 'pendidikan', label: 'Pendidikan', type: 'text', width: 110 },
+      { key: 'tanggalLahir', label: 'Tgl Lahir', type: 'date', width: 110 },
+      { key: 'keterangan', label: 'Keterangan', type: 'text' },
     ],
   },
   {
-    id: 'A5', kode: 'A.5', judul: 'Buku Agenda Surat Masuk', group: 'Surat Masuk',
-    cols: [
-      { k: 'no',       l: 'No',       w: '8%',   ro: true },
-      { k: 'nomor',    l: 'Nomor',    w: '16%' },
-      { k: 'tanggal',  l: 'Tanggal', w: '16%' },
-      { k: 'pengirim', l: 'Pengirim',w: '20%' },
-      { k: 'uraian',   l: 'Uraian',  w: '300px' },
-      { k: 'ket',      l: 'Ket.',    w: '7%' },
+    id: 'A.5',
+    name: 'Buku Tanah Kas Desa',
+    shortName: 'Tanah Kas Desa',
+    columns: [
+      { key: 'no', label: 'No', type: 'number', width: 48 },
+      { key: 'lokasi', label: 'Lokasi / Blok', type: 'text' },
+      { key: 'luasM2', label: 'Luas (m²)', type: 'number', width: 100 },
+      { key: 'jenisHak', label: 'Jenis Hak', type: 'text', width: 110 },
+      { key: 'penggunaan', label: 'Penggunaan', type: 'text' },
+      { key: 'keterangan', label: 'Keterangan', type: 'text' },
     ],
   },
   {
-    id: 'A6', kode: 'A.6', judul: 'Buku Agenda Surat Keluar', group: 'Surat Keluar',
-    cols: [
-      { k: 'no',      l: 'No',      w: '8%',   ro: true },
-      { k: 'nomor',   l: 'Nomor',   w: '16%' },
-      { k: 'tanggal', l: 'Tanggal', w: '16%' },
-      { k: 'kepada',  l: 'Kepada',  w: '20%' },
-      { k: 'uraian',  l: 'Uraian',  w: '300px' },
-      { k: 'ket',     l: 'Ket.',    w: '7%' },
+    id: 'A.6',
+    name: 'Buku Agenda',
+    shortName: 'Agenda',
+    columns: [
+      { key: 'no', label: 'No', type: 'number', width: 48 },
+      { key: 'tanggal', label: 'Tanggal', type: 'date', width: 110 },
+      { key: 'nomorSurat', label: 'Nomor Surat', type: 'mono', width: 140 },
+      { key: 'dariKepada', label: 'Dari / Kepada', type: 'text' },
+      { key: 'perihal', label: 'Perihal', type: 'text' },
+      { key: 'keterangan', label: 'Keterangan', type: 'text' },
     ],
   },
-]
+];
 
-export const YEARS = ['2021','2022','2023','2024','2025','2026','2027','2028','2029']
+// Build tahun 5 tahun ke belakang s/d tahun ini
+const currentYear = new Date().getFullYear();
+export const YEARS: string[] = Array.from({ length: 6 }, (_, i) =>
+  String(currentYear - i)
+);
 
-export const DEFAULT_ROWS = 10
+export const DEFAULT_YEAR = String(currentYear);
+
+export const DEFAULT_ROWS = 10;

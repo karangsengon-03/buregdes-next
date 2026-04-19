@@ -1,5 +1,6 @@
 // ─────────────────────────────────────────────
 // BuRegDes Next — Types
+// Session 1 types TIDAK diubah, hanya tambah ToastMessage
 // ─────────────────────────────────────────────
 
 export interface BookColumn {
@@ -54,5 +55,13 @@ export interface SessionData {
   savedPwd?: string
 }
 
-export type Theme = 'dark' | 'light'
+export type Theme    = 'dark' | 'light'
 export type ViewMode = 'table' | 'card'
+
+// ── Tambahan Session 2 ────────────────────────
+export interface ToastMessage {
+  id: string
+  message: string
+  variant?: 'success' | 'error' | 'warning' | 'info'
+  duration?: number   // ms, default 3000
+}
