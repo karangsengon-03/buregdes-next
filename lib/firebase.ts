@@ -1,10 +1,10 @@
 // ─────────────────────────────────────────────
-// BuRegDes Next — Firebase Init
+// BuRegDes Next — Firebase init
+// Export: db (alias database), database, auth
 // ─────────────────────────────────────────────
-
 import { initializeApp, getApps, getApp } from 'firebase/app'
-import { getDatabase } from 'firebase/database'
-import { getAuth } from 'firebase/auth'
+import { getDatabase }                     from 'firebase/database'
+import { getAuth }                         from 'firebase/auth'
 
 const firebaseConfig = {
   apiKey:            process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
@@ -16,9 +16,10 @@ const firebaseConfig = {
   appId:             process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
 }
 
-// Cegah inisialisasi duplikat (Next.js hot reload)
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp()
+// Anti duplikat saat hot reload
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig)
 
-export const db   = getDatabase(app)
-export const auth = getAuth(app)
+export const db       = getDatabase(app)
+export const database = db          // alias — dipakai oleh usePresence & useHistory
+export const auth     = getAuth(app)
 export default app

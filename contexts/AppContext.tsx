@@ -15,7 +15,7 @@ import {
 } from 'react'
 import { db } from '@/lib/firebase'
 import { ref, onValue } from 'firebase/database'
-import { BOOKS, YEARS } from '@/constants/books'
+import { BOOKS, YEARS, DEFAULT_YEAR } from '@/constants/books'
 import type { BookDef, ToastMessage } from '@/types'
 
 interface AppContextValue {
@@ -33,7 +33,7 @@ const AppContext = createContext<AppContextValue | null>(null)
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [activeBook, setActiveBook] = useState<BookDef>(BOOKS[0])
-  const [activeYear, setActiveYear] = useState<string>(YEARS[YEARS.length - 1])
+  const [activeYear, setActiveYear] = useState<string>(DEFAULT_YEAR)
   const [isOnline, setIsOnline]     = useState(true)
   const [toast, setToast]           = useState<ToastMessage | null>(null)
   const toastTimer                  = useRef<ReturnType<typeof setTimeout> | null>(null)

@@ -32,7 +32,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body suppressHydrationWarning>
         <script
           dangerouslySetInnerHTML={{
-            __html: "(function(){try{var t=localStorage.getItem('brTheme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();",
+            __html: [
+              "(function(){try{var t=localStorage.getItem('brTheme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();",
+              "if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}"
+            ].join('')
           }}
         />
         {children}
