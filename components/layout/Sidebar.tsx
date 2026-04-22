@@ -89,7 +89,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           width: 288, maxWidth: '88vw',
           display: 'flex', flexDirection: 'column',
           background: 'var(--bg-sidebar)',
-          borderRight: '1px solid var(--border)',
+          borderRight: '1px solid var(--sidebar-divider, var(--border))',
           transform: open ? 'translateX(0)' : 'translateX(-100%)',
           transition: 'transform 300ms cubic-bezier(0.4,0,0.2,1)',
           willChange: 'transform',
@@ -107,7 +107,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           display: 'flex', alignItems: 'center',
           justifyContent: 'space-between',
           padding: '14px 16px 12px',
-          borderBottom: '1px solid rgba(255,255,255,0.07)',
+          borderBottom: '1px solid var(--sidebar-divider)',
           flexShrink: 0,
         }}>
           <div>
@@ -121,7 +121,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             <div style={{ marginTop: 2 }}>
               <h2 style={{
                 fontSize: 16, fontWeight: 800,
-                color: 'var(--text-sidebar-active)', margin: 0, lineHeight: 1.2,
+                color: 'var(--sidebar-fg-title)', margin: 0, lineHeight: 1.2,
               }}>
                 BuRegDes Next
               </h2>
@@ -153,12 +153,12 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         {/* ── Tahun Anggaran ── */}
         <div style={{
           padding: '10px 16px',
-          borderBottom: '1px solid rgba(255,255,255,0.07)',
+          borderBottom: '1px solid var(--sidebar-divider)',
           flexShrink: 0,
         }}>
           <p style={{
             fontSize: 9, fontWeight: 700, letterSpacing: '0.1em',
-            color: 'var(--text-muted)', margin: '0 0 6px',
+            color: 'var(--sidebar-fg-muted)', margin: '0 0 6px',
             textTransform: 'uppercase',
           }}>
             Tahun Anggaran
@@ -202,7 +202,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           <p style={{
             padding: '8px 16px 6px',
             fontSize: 9, fontWeight: 700, letterSpacing: '0.1em',
-            color: 'var(--text-muted)', textTransform: 'uppercase', margin: 0,
+            color: 'var(--sidebar-fg-muted)', textTransform: 'uppercase', margin: 0,
           }}>
             Pilih Buku
           </p>
@@ -232,7 +232,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                   width: 32, height: 32, borderRadius: 9,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   flexShrink: 0,
-                  background: isActive ? 'var(--accent)' : 'rgba(255,255,255,0.06)',
+                  background: isActive ? 'var(--accent)' : 'var(--sidebar-icon-bg)',
                 }}>
                   <BookOpen size={15} style={{ color: isActive ? '#fff' : 'var(--text-secondary)' }} />
                 </div>
@@ -242,14 +242,14 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                   <p style={{
                     fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)',
                     fontSize: 10, fontWeight: 700,
-                    color: isActive ? 'var(--accent)' : 'var(--text-muted)',
+                    color: isActive ? 'var(--accent)' : 'var(--sidebar-fg-muted)',
                     margin: '0 0 1px',
                   }}>
                     {book.kode}
                   </p>
                   <p style={{
                     fontSize: 13, fontWeight: isActive ? 600 : 400,
-                    color: isActive ? '#fff' : 'var(--text-secondary)',
+                    color: isActive ? '#fff' : 'var(--sidebar-fg)',
                     margin: 0, overflow: 'hidden',
                     textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                   }}>
@@ -263,7 +263,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           })}
 
           {/* ── Divider ── */}
-          <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '8px 16px' }} />
+          <div style={{ height: 1, background: 'var(--sidebar-divider)', margin: '8px 16px' }} />
 
           {/* ── Pengaturan ── */}
           <button
@@ -279,7 +279,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
               borderLeftColor: isSettings ? 'var(--accent)' : 'transparent',
               cursor: 'pointer', transition: 'background 120ms',
             }}
-            onMouseEnter={e => { if (!isSettings) e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}
+            onMouseEnter={e => { if (!isSettings) e.currentTarget.style.background = 'var(--sidebar-hover)' }}
             onMouseLeave={e => { if (!isSettings) e.currentTarget.style.background = 'transparent' }}
           >
             <div style={{
@@ -292,7 +292,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             </div>
             <p style={{
               fontSize: 13, fontWeight: isSettings ? 600 : 400,
-              color: isSettings ? '#fff' : 'var(--text-secondary)',
+              color: isSettings ? '#fff' : 'var(--sidebar-fg)',
               margin: 0, flex: 1,
             }}>
               Pengaturan
@@ -305,7 +305,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         <div style={{
           flexShrink: 0,
           padding: '12px 16px calc(12px + env(safe-area-inset-bottom))',
-          borderTop: '1px solid rgba(255,255,255,0.07)',
+          borderTop: '1px solid var(--sidebar-divider)',
         }}>
                     {/* User info */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>

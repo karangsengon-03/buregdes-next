@@ -47,6 +47,13 @@
   --overlay-bg:      rgba(10,22,40,0.85);
   --scrollbar:       #1E3A5F;
   --scrollbar-thumb: #3B82F6;
+  /* ── Sidebar vars (dark) ── */
+  --sidebar-fg:        #CBD5E1;
+  --sidebar-fg-title:  #F1F5F9;
+  --sidebar-fg-muted:  #64748B;
+  --sidebar-hover:     rgba(255,255,255,0.05);
+  --sidebar-icon-bg:   rgba(255,255,255,0.07);
+  --sidebar-divider:   rgba(255,255,255,0.07);
 
   --stripe-gradient: linear-gradient(90deg, #F59E0B, #EF4444, #10B981, #3B82F6);
   --stripe-h:        4px;
@@ -94,6 +101,16 @@
   --overlay-bg:      rgba(0,0,0,0.55);
   --scrollbar:       #E2E8F0;
   --scrollbar-thumb: #2563EB;
+  /* ── Sidebar vars (light) ── */
+  --bg-sidebar:        #FFFFFF;
+  --sidebar-fg:        #1E293B;
+  --sidebar-fg-title:  #0F172A;
+  --sidebar-fg-muted:  #64748B;
+  --sidebar-hover:     rgba(37,99,235,0.06);
+  --sidebar-icon-bg:   rgba(37,99,235,0.08);
+  --sidebar-divider:   rgba(0,0,0,0.08);
+  --text-sidebar:      #334155;
+  --text-sidebar-active: #0F172A;
 }
 
 /* ── Base ─────────────────────────────────────────────── */
