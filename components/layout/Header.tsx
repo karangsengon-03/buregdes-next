@@ -25,18 +25,15 @@ function initials(name: string) {
 }
 
 export function Header({ onMenuClick }: HeaderProps) {
-  const { activeBook, activeYear } = useApp()
+  const { activeBook, activeYear, searchQuery, setSearchQuery } = useApp()
   const pathname   = usePathname()
   const isSettings = pathname === '/app/settings'
   const { desaInfo }  = useDesaInfo()
   const { onlineUsers, myUid } = usePresence()
 
   const [isDark,       setIsDark]       = useState(true)
-  const [query,        setQuery]        = useState('')
-  const [isFiltering,  setIsFiltering]  = useState(false)
-  const filteredResults: unknown[] = []
-  const totalRows = 0
-  const clearQuery = () => { setQuery(''); setIsFiltering(false) }
+  // Search dikelola via AppContext — page.tsx yang filter data
+  const clearQuery = () => setSearchQuery('')
   const [presenceOpen, setPresenceOpen] = useState(false)
   const [searchOpen,   setSearchOpen]   = useState(false)
   const searchRef = useRef<HTMLInputElement>(null)
@@ -234,12 +231,12 @@ export function Header({ onMenuClick }: HeaderProps) {
         isSettings={isSettings}
         searchOpen={searchOpen}
         searchRef={searchRef}
-        query={query}
-        setQuery={setQuery}
+        query={searchQuery}
+        setQuery={setSearchQuery}
         clearQuery={clearQuery}
-        isFiltering={isFiltering}
-        filteredCount={filteredResults.length}
-        totalCount={totalRows}
+        isFiltering={searchQuery.length > 0}
+        filteredCount={0}
+        totalCount={0}
         onCloseSearch={() => { setSearchOpen(false); clearQuery() }}
       />
     </header>
@@ -287,7 +284,7 @@ function SubBar({ activeBook, activeYear, isSettings, searchOpen, searchRef, que
           <input
             ref={searchRef}
             value={query}
-            onChange={e => setQuery(e.target.value)}
+            onChange={e => { setQuery(e.target.value) }}
             placeholder="Cari di tabel..."
             style={{
               flex: 1, padding: '3px 8px', fontSize: 13, borderRadius: 6,

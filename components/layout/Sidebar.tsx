@@ -118,19 +118,17 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             }}>
               BUKU REGISTER DESA
             </p>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginTop: 2 }}>
+            <div style={{ marginTop: 2 }}>
               <h2 style={{
-                fontSize: 17, fontWeight: 800,
-                color: 'var(--text-sidebar-active)', margin: 0, lineHeight: 1,
+                fontSize: 16, fontWeight: 800,
+                color: 'var(--text-sidebar-active)', margin: 0, lineHeight: 1.2,
               }}>
-                BuRegDes
+                BuRegDes Next
               </h2>
               <span style={{
                 fontSize: 10, fontWeight: 600,
                 color: 'var(--accent)',
                 fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)',
-                background: 'var(--accent-subtle)',
-                padding: '1px 5px', borderRadius: 4,
               }}>
                 v{APP_VERSION}
               </span>

@@ -490,9 +490,9 @@ function EntryCard({
 
 // ── Main page ─────────────────────────────────
 export default function AppPage() {
-  const { activeBook, activeYear, showToast } = useApp()
+  const { activeBook, activeYear, showToast, searchQuery, setSearchQuery } = useApp()
   const { rows, status, error, addRow, updateCell, deleteRow } = useBookData(activeBook.id, activeYear)
-  const { query, setQuery, clearQuery, filteredResults, totalRows, isFiltering, highlightText } = useSearch(rows, activeBook.cols)
+  const { query, setQuery, clearQuery, filteredResults, totalRows, isFiltering, highlightText } = useSearch(rows, activeBook.cols, searchQuery, setSearchQuery)
   const { entries: histEntries, status: histStatus, logEdit } = useHistory(activeBook.id)
   const { isGlobalLocked, hasPin, hasMasterHash, unlockedSession, setPin, unlock, lock, toggleRowLock, isRowLocked, verifyMaster, setMasterHash } = useLock(activeYear)
 
@@ -513,9 +513,9 @@ export default function AppPage() {
   const [rowHistTarget, setRowHistTarget] = useState<BookRow | null>(null)
 
   const openLock = useCallback(() => {
-    if (!hasPin) setLockMode('set')
-    else if (isGlobalLocked) setLockMode('unlock')
-    else setLockMode('change')
+    if (!hasPin)              setLockMode('set')      // belum ada PIN → buat PIN
+    else if (isGlobalLocked)  setLockMode('unlock')   // sedang terkunci → buka
+    else                      setLockMode('relock')   // sedang terbuka → kunci kembali
     setLockOpen(true)
   }, [hasPin, isGlobalLocked])
 
@@ -595,8 +595,11 @@ export default function AppPage() {
         <div style={{ width: 1, height: 24, background: 'var(--border)', flexShrink: 0, margin: '0 2px' }} />
 
         {!['A5','A6'].includes(activeBook.id) && (
-          <ActionBtn onClick={openLock} title={isGlobalLocked ? 'Buku terkunci — tap untuk buka' : hasPin ? 'Ganti PIN' : 'Set PIN Kunci'} active={isGlobalLocked} activeColor="var(--warning)" activeBg="rgba(245,158,11,0.10)" activeBorder="rgba(245,158,11,0.4)">
-            {isGlobalLocked ? <Lock size={16} /> : <Unlock size={16} />}
+          <ActionBtn onClick={openLock}
+            title={isGlobalLocked ? 'Terkunci — tap untuk buka' : unlockedSession ? 'Kunci sekarang' : hasPin ? 'Set PIN / Kunci' : 'Set PIN Kunci'}
+            active={isGlobalLocked}
+            activeColor="var(--warning)" activeBg="rgba(245,158,11,0.10)" activeBorder="rgba(245,158,11,0.4)">
+            {isGlobalLocked ? <Lock size={16} /> : unlockedSession ? <Lock size={16} /> : <Unlock size={16} />}
           </ActionBtn>
         )}
 
@@ -888,7 +891,16 @@ export default function AppPage() {
         }
         onClose={() => { setHistOpen(false); setRowHistTarget(null) }}
       />
-      <LockModal open={lockOpen} mode={lockMode} hasMasterHash={hasMasterHash} onClose={() => setLockOpen(false)} onSetPin={setPin} onUnlock={unlock} onVerifyMaster={verifyMaster} onSetMaster={setMasterHash} />
+      {lockMode === 'relock' && lockOpen && (
+        // Kunci kembali langsung — tidak perlu modal
+        (() => {
+          lock().then(() => setLockOpen(false))
+          return null
+        })()
+      )}
+      {lockMode !== 'relock' && (
+        <LockModal open={lockOpen} mode={lockMode} hasMasterHash={hasMasterHash} onClose={() => setLockOpen(false)} onSetPin={setPin} onUnlock={unlock} onVerifyMaster={verifyMaster} onSetMaster={setMasterHash} />
+      )}
       {cardEditRow && (
         <CardEditModal
           open={!!cardEditRow} row={cardEditRow} cols={activeBook.cols}

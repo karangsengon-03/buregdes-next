@@ -59,7 +59,7 @@
   --bg-sidebar:      #1A3C5E;
   --bg-elevated:     #F8FAFC;
   --bg-input:        #FFFFFF;
-  --bg-table-head:   #1A3C5E;
+  --bg-table-head:   #E8EDF5;
   --bg-table-even:   #F8FAFC;
   --bg-table-odd:    #FFFFFF;
   --bg-hover:        rgba(37,99,235,0.05);
@@ -69,10 +69,10 @@
   --accent-subtle:   rgba(37,99,235,0.08);
 
   --text-primary:    #0F172A;
-  --text-secondary:  #475569;
-  --text-muted:      #94A3B8;
+  --text-secondary:  #334155;
+  --text-muted:      #64748B;
   --text-accent:     #2563EB;
-  --text-sidebar:    rgba(255,255,255,0.75);
+  --text-sidebar:    rgba(255,255,255,0.80);
   --text-sidebar-active: #FFFFFF;
 
   --border:          #E2E8F0;

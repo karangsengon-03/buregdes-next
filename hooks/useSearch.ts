@@ -38,16 +38,26 @@ function matchValue(value: string | number | undefined, q: string): boolean {
 }
 
 // ─────────────────────────────────────────────
-export function useSearch(rows: BookRow[], cols: ColDef[]): UseSearchReturn {
-  const [query, setQueryRaw] = useState('')
+export function useSearch(
+  rows: BookRow[],
+  cols: ColDef[],
+  externalQuery?: string,
+  externalSetQuery?: (q: string) => void
+): UseSearchReturn {
+  // Jika external query disediakan (dari AppContext), gunakan itu
+  // agar Header dan page.tsx sinkron
+  const [internalQuery, setInternalQuery] = useState('')
+  const query = externalQuery !== undefined ? externalQuery : internalQuery
 
   const setQuery = useCallback((q: string) => {
-    setQueryRaw(q)
-  }, [])
+    if (externalSetQuery) externalSetQuery(q)
+    else setInternalQuery(q)
+  }, [externalSetQuery])
 
   const clearQuery = useCallback(() => {
-    setQueryRaw('')
-  }, [])
+    if (externalSetQuery) externalSetQuery('')
+    else setInternalQuery('')
+  }, [externalSetQuery])
 
   const normalizedQuery = useMemo(() => normalize(query), [query])
   const isFiltering = normalizedQuery.length > 0

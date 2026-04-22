@@ -1,49 +1,41 @@
-// BuRegDes Next — Service Worker (Session 11)
-// Strategy: Network-first, fallback to cache
-// Cache name berubah tiap deploy agar auto-update
+// BuRegDes Next — Service Worker (Session 18)
+// Strategy: Network First — selalu ambil dari network, tanpa cache delay
+// Update: skipWaiting + controllerchange untuk instant update tanpa hard refresh
 
-const CACHE_NAME = 'buregdes-v1'
-const OFFLINE_URL = '/'
+const CACHE_NAME = 'buregdes-v18'
+const OFFLINE_FALLBACK = '/'
 
-// Assets yang di-cache saat install
-const PRECACHE = [
-  '/',
-  '/app',
-  '/manifest.json',
-]
-
-self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(PRECACHE))
-  )
+self.addEventListener('install', (event) => {
+  // Skip waiting — langsung aktif tanpa menunggu tab lama tutup
   self.skipWaiting()
 })
 
-self.addEventListener('activate', event => {
+self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(
-        keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
-      )
-    )
+    Promise.all([
+      // Hapus cache lama
+      caches.keys().then(keys =>
+        Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+      ),
+      // Ambil kontrol semua tab segera
+      self.clients.claim(),
+    ])
   )
-  self.clients.claim()
 })
 
-self.addEventListener('fetch', event => {
-  // Hanya handle GET request, skip Firebase & API calls
+self.addEventListener('fetch', (event) => {
+  // Hanya handle GET request
   if (event.request.method !== 'GET') return
-  const url = new URL(event.request.url)
-  if (
-    url.hostname.includes('firebase') ||
-    url.hostname.includes('googleapis') ||
-    url.hostname.includes('anthropic')
-  ) return
+  // Skip chrome-extension dan non-http
+  if (!event.request.url.startsWith('http')) return
+  // Skip Firebase RTDB — biarkan native handle
+  if (event.request.url.includes('firebaseio.com')) return
+  if (event.request.url.includes('googleapis.com')) return
 
   event.respondWith(
     fetch(event.request)
       .then(response => {
-        // Cache successful responses
+        // Simpan ke cache untuk fallback offline
         if (response.ok) {
           const clone = response.clone()
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone))
@@ -51,7 +43,13 @@ self.addEventListener('fetch', event => {
         return response
       })
       .catch(() =>
-        caches.match(event.request).then(cached => cached ?? caches.match(OFFLINE_URL))
+        // Fallback ke cache jika offline
+        caches.match(event.request).then(cached => cached || caches.match(OFFLINE_FALLBACK))
       )
   )
+})
+
+// Notify client saat ada update baru
+self.addEventListener('message', (event) => {
+  if (event.data === 'SKIP_WAITING') self.skipWaiting()
 })

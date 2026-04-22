@@ -12,7 +12,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Lock, Unlock, KeyRound, ShieldCheck, Eye, EyeOff, X } from 'lucide-react'
 
-export type LockModalMode = 'set' | 'unlock' | 'change' | 'master' | 'change-master'
+export type LockModalMode = 'set' | 'unlock' | 'change' | 'master' | 'change-master' | 'relock'
 
 interface LockModalProps {
   open:          boolean
@@ -215,7 +215,14 @@ export function LockModal({
         ? 'Buat master password baru (minimal 4 karakter).'
         : 'Masukkan ulang master password baru untuk konfirmasi.',
     },
+    'relock': {
+      icon:  <Lock size={22} style={{ color: 'var(--warning)' }} />,
+      title: 'Mengunci...',
+      desc:  '',
+    },
   }[mode]
+
+  if (!cfg) return null
 
   const isPasswordField = mode === 'master' || mode === 'change-master' || (mode === 'change' && step === 'master')
   const isMasterStep    = (mode === 'change' && step === 'master') || (mode === 'change-master' && step === 'master')

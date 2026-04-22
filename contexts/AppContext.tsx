@@ -27,6 +27,8 @@ interface AppContextValue {
   toast: ToastMessage | null
   showToast: (msg: Omit<ToastMessage, 'id'>) => void
   dismissToast: () => void
+  searchQuery: string
+  setSearchQuery: (q: string) => void
 }
 
 const AppContext = createContext<AppContextValue | null>(null)
@@ -36,6 +38,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [activeYear, setActiveYear] = useState<string>(DEFAULT_YEAR)
   const [isOnline, setIsOnline]     = useState(true)
   const [toast, setToast]           = useState<ToastMessage | null>(null)
+  const [searchQuery, setSearchQuery] = useState<string>('')
   const toastTimer                  = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // Firebase connection monitor
@@ -65,6 +68,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       activeYear, setActiveYear,
       isOnline,
       toast, showToast, dismissToast,
+      searchQuery, setSearchQuery,
     }}>
       {children}
     </AppContext.Provider>

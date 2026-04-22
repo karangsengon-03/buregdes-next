@@ -96,9 +96,7 @@ export default function LoginPage() {
         {status === 'session' && session && (
           <div className="login-card animate-fade-up">
             <div className="card-logo-wrap">
-              <div className="card-logo-ring">
-                <span className="card-logo-abbr">BR</span>
-              </div>
+              <img src="/icons/icon-192.png" alt="BuRegDes" className="card-logo-img" />
             </div>
 
             <div className="card-brand">BuRegDes</div>
@@ -147,9 +145,7 @@ export default function LoginPage() {
         {status === 'form' && (
           <div className="login-card animate-fade-up">
             <div className="card-logo-wrap">
-              <div className="card-logo-ring">
-                <span className="card-logo-abbr">BR</span>
-              </div>
+              <img src="/icons/icon-192.png" alt="BuRegDes" className="card-logo-img" />
             </div>
 
             <div className="card-brand">BuRegDes</div>
@@ -349,21 +345,11 @@ export default function LoginPage() {
           justify-content: center;
           margin-bottom: 14px;
         }
-        .card-logo-ring {
-          width: 68px; height: 68px;
-          border-radius: 50%;
-          background: var(--accent-subtle);
-          border: 2px solid var(--border);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          box-shadow: 0 0 0 4px var(--accent-subtle);
-        }
-        .card-logo-abbr {
-          font-size: 22px;
-          font-weight: 800;
-          color: var(--accent);
-          letter-spacing: 1px;
+        .card-logo-img {
+          width: 80px; height: 80px;
+          border-radius: 20px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+          object-fit: cover;
         }
 
         /* Brand */
