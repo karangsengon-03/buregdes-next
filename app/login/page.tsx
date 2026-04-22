@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { Eye, EyeOff, Sun, Moon, LogIn, ArrowRight, RefreshCw, Loader2 } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
-import { loadSession, getTheme, setTheme } from '@/lib/session'
+import { loadSession, getSavedPassword, getTheme, setTheme } from '@/lib/session'
 
 export default function LoginPage() {
   const router  = useRouter()
@@ -29,11 +29,13 @@ export default function LoginPage() {
     }
   }, [status, router])
 
-  // Prefill email saat ganti akun
+  // Prefill email + password saat form tampil
   useEffect(() => {
     if (status === 'form') {
       const session = loadSession()
       if (session?.email) setEmail(session.email)
+      const saved = session ? getSavedPassword(session) : null
+      if (saved) setPassword(saved)
     }
   }, [status])
 
@@ -62,17 +64,18 @@ export default function LoginPage() {
 
   if (!mounted || status === 'loading') {
     return (
-      <div className="login-screen">
-        <div className="login-loading">
-          <div className="loading-logo-wrap">
-            <div className="loading-logo-ring" />
-            <span className="loading-logo-text">BR</span>
-          </div>
-          <p className="loading-brand-text">BuRegDes</p>
-          <p className="loading-sub-text">Administrasi Desa</p>
-          <Loader2 className="loading-spinner-icon" />
-          <p className="loading-desa-text">Desa Karang Sengon · Kec. Klabang · Kab. Bondowoso</p>
-        </div>
+      <div style={{
+        minHeight: '100dvh',
+        background: 'linear-gradient(145deg, #0A1628 0%, #0D1B2A 55%, #1B2B3E 100%)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        <div style={{
+          width: 36, height: 36, borderRadius: '50%',
+          border: '3px solid rgba(59,130,246,0.25)',
+          borderTopColor: '#3B82F6',
+          animation: 'spin 0.8s linear infinite',
+        }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     )
   }

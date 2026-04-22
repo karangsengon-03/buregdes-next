@@ -7,9 +7,8 @@
 import { useState, useCallback, useEffect } from 'react'
 import {
   MapPin, CheckCircle2, AlertTriangle, ChevronDown,
-  Info, Wifi, WifiOff, Building2, Calendar, Save,
-  ChevronRight, ShieldCheck, KeyRound,
-} from 'lucide-react'
+  Info, Wifi, Building2, Save,
+  ChevronRight, ShieldCheck, KeyRound} from 'lucide-react'
 import { useSettings, APP_VERSION, APP_NAME, APP_DESC } from '@/hooks/useSettings'
 import { useLock } from '@/hooks/useLock'
 import { LockModal } from '@/components/ui/LockModal'
@@ -21,8 +20,7 @@ function Section({
   title,
   subtitle,
   badge,
-  children,
-}: {
+  children}: {
   icon: React.ReactNode
   title: string
   subtitle?: string
@@ -36,8 +34,7 @@ function Section({
         borderRadius: 14,
         border: '1px solid var(--border)',
         overflow: 'hidden',
-        marginBottom: 12,
-      }}
+        marginBottom: 12}}
     >
       {/* Section header */}
       <div
@@ -46,8 +43,7 @@ function Section({
           borderBottom: '1px solid var(--border)',
           display: 'flex',
           alignItems: 'center',
-          gap: 10,
-        }}
+          gap: 10}}
       >
         <div
           style={{
@@ -58,8 +54,7 @@ function Section({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            flexShrink: 0,
-          }}
+            flexShrink: 0}}
         >
           {icon}
         </div>
@@ -91,8 +86,7 @@ function FieldRow({
   onChange,
   placeholder,
   type = 'text',
-  disabled,
-}: {
+  disabled}: {
   label: string
   value: string
   onChange: (v: string) => void
@@ -110,8 +104,7 @@ function FieldRow({
           color: 'var(--text-muted)',
           textTransform: 'uppercase',
           letterSpacing: '0.05em',
-          marginBottom: 5,
-        }}
+          marginBottom: 5}}
       >
         {label}
       </label>
@@ -132,8 +125,7 @@ function FieldRow({
           outline: 'none',
           boxSizing: 'border-box',
           transition: 'border-color 150ms',
-          cursor: disabled ? 'not-allowed' : 'text',
-        }}
+          cursor: disabled ? 'not-allowed' : 'text'}}
         onFocus={e => {
           if (!disabled) e.currentTarget.style.borderColor = 'var(--border-focus)'
         }}
@@ -149,8 +141,7 @@ function FieldRow({
 function YearButton({
   year,
   active,
-  onClick,
-}: {
+  onClick}: {
   year: string
   active: boolean
   onClick: () => void
@@ -169,8 +160,7 @@ function YearButton({
         fontWeight: active ? 700 : 500,
         fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)',
         cursor: 'pointer',
-        transition: 'all 150ms',
-      }}
+        transition: 'all 150ms'}}
     >
       {year}
     </button>
@@ -186,8 +176,7 @@ function InfoRow({ label, value }: { label: string; value: string }) {
         justifyContent: 'space-between',
         alignItems: 'center',
         padding: '9px 0',
-        borderBottom: '1px solid var(--border)',
-      }}
+        borderBottom: '1px solid var(--border)'}}
     >
       <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>{label}</span>
       <span
@@ -195,8 +184,7 @@ function InfoRow({ label, value }: { label: string; value: string }) {
           fontSize: 12,
           fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)',
           color: 'var(--text-secondary)',
-          fontWeight: 600,
-        }}
+          fontWeight: 600}}
       >
         {value}
       </span>
@@ -214,14 +202,11 @@ export default function SettingsPage() {
     activeYear,
     availableYears,
     setActiveYear,
-    isOnline,
-    showToast,
-  } = useSettings()
+    showToast} = useSettings()
 
   const {
     hasPin, hasMasterHash, isGlobalLocked,
-    setPin, unlock, verifyMaster, setMasterHash,
-  } = useLock(activeYear)
+    setPin, unlock, verifyMaster, setMasterHash} = useLock(activeYear)
 
   const [lockOpen, setLockOpen] = useState(false)
   const [lockMode, setLockMode] = useState<LockModalMode>('set')
@@ -242,8 +227,7 @@ export default function SettingsPage() {
     kecamatan:  desaInfo.kecamatan  ?? '',
     kabupaten:  desaInfo.kabupaten  ?? '',
     provinsi:   desaInfo.provinsi   ?? '',
-    tahun:      desaInfo.tahun      ?? '',
-  })
+    tahun:      desaInfo.tahun      ?? ''})
   const [saving, setSaving] = useState(false)
   const [dirty, setDirty]   = useState(false)
 
@@ -255,8 +239,7 @@ export default function SettingsPage() {
         kecamatan: desaInfo.kecamatan  ?? '',
         kabupaten: desaInfo.kabupaten  ?? '',
         provinsi:  desaInfo.provinsi   ?? '',
-        tahun:     desaInfo.tahun      ?? '',
-      })
+        tahun:     desaInfo.tahun      ?? ''})
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [desaStatus])
@@ -289,8 +272,7 @@ export default function SettingsPage() {
       showToast({
         message: `Tahun aktif: ${year}`,
         variant: 'success',
-        duration: 1500,
-      })
+        duration: 1500})
     },
     [setActiveYear, showToast]
   )
@@ -301,15 +283,13 @@ export default function SettingsPage() {
         flex: 1,
         overflowY: 'auto',
         overflowX: 'hidden',
-        WebkitOverflowScrolling: 'touch',
-      }}
+        WebkitOverflowScrolling: 'touch'}}
     >
       {/* Page header */}
       <div
         style={{
           padding: '16px 16px 0',
-          marginBottom: 16,
-        }}
+          marginBottom: 16}}
       >
         <h1
           style={{
@@ -317,8 +297,7 @@ export default function SettingsPage() {
             fontSize: 20,
             fontWeight: 800,
             color: 'var(--text-primary)',
-            letterSpacing: '-0.02em',
-          }}
+            letterSpacing: '-0.02em'}}
         >
           Pengaturan
         </h1>
@@ -346,8 +325,7 @@ export default function SettingsPage() {
                   background: 'rgba(16,185,129,0.12)',
                   color: 'var(--success)',
                   fontSize: 10,
-                  fontWeight: 700,
-                }}
+                  fontWeight: 700}}
               >
                 <CheckCircle2 size={11} />
                 Lengkap
@@ -363,8 +341,7 @@ export default function SettingsPage() {
                   background: 'rgba(245,158,11,0.12)',
                   color: 'var(--warning)',
                   fontSize: 10,
-                  fontWeight: 700,
-                }}
+                  fontWeight: 700}}
               >
                 <AlertTriangle size={11} />
                 Belum lengkap
@@ -382,8 +359,7 @@ export default function SettingsPage() {
                     borderRadius: 9,
                     background: 'var(--border)',
                     width: `${w}%`,
-                    animation: 'pulse 1.4s ease-in-out infinite',
-                  }}
+                    animation: 'pulse 1.4s ease-in-out infinite'}}
                 />
               ))}
               <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }`}</style>
@@ -421,33 +397,7 @@ export default function SettingsPage() {
                 placeholder="cth. 2025"
               />
 
-              {/* Preview */}
-              {draft.desa && (
-                <div
-                  style={{
-                    marginTop: 4,
-                    padding: '10px 12px',
-                    borderRadius: 9,
-                    background: 'var(--bg-elevated)',
-                    border: '1px solid var(--border)',
-                    marginBottom: 14,
-                  }}
-                >
-                  <p style={{ margin: '0 0 2px', fontSize: 10, color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    Preview Header
-                  </p>
-                  <p style={{ margin: 0, fontSize: 12, color: 'var(--text-primary)', lineHeight: 1.6 }}>
-                    {[
-                      draft.desa && `Desa ${draft.desa}`,
-                      draft.kecamatan && `Kec. ${draft.kecamatan}`,
-                      draft.kabupaten && `Kab. ${draft.kabupaten}`,
-                    ].filter(Boolean).join(', ')}
-                    {draft.provinsi && <><br /><span style={{ color: 'var(--text-muted)' }}>Prov. {draft.provinsi}</span></>}
-                  </p>
-                </div>
-              )}
-
-              {/* Save button */}
+                            {/* Save button */}
               <button
                 onClick={handleSaveDesa}
                 disabled={saving || !dirty}
@@ -466,8 +416,7 @@ export default function SettingsPage() {
                   justifyContent: 'center',
                   gap: 7,
                   transition: 'background 150ms, color 150ms',
-                  opacity: saving ? 0.7 : 1,
-                }}
+                  opacity: saving ? 0.7 : 1}}
                 onMouseEnter={e => {
                   if (dirty && !saving) e.currentTarget.style.background = 'var(--accent-hover)'
                 }}
@@ -482,40 +431,7 @@ export default function SettingsPage() {
           )}
         </Section>
 
-        {/* ── Section: Tahun Aktif ───────────── */}
-        <Section
-          icon={<Calendar size={16} style={{ color: 'var(--accent)' }} />}
-          title="Tahun Anggaran Aktif"
-          subtitle="Menentukan data RTDB yang ditampilkan"
-        >
-          <p style={{ margin: '0 0 12px', fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6 }}>
-            Data setiap buku tersimpan terpisah per tahun di Firebase.
-            Pilih tahun untuk beralih antar periode anggaran.
-          </p>
-          <div style={{ display: 'flex', gap: 6 }}>
-            {availableYears.map(year => (
-              <YearButton
-                key={year}
-                year={year}
-                active={year === activeYear}
-                onClick={() => handleYearChange(year)}
-              />
-            ))}
-          </div>
-          <p
-            style={{
-              margin: '10px 0 0',
-              fontSize: 11,
-              color: 'var(--text-muted)',
-              fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)',
-              textAlign: 'center',
-            }}
-          >
-            RTDB path: data/{activeYear}/tableData/…
-          </p>
-        </Section>
-
-        {/* ── Section: Keamanan ──────────────── */}
+                {/* ── Section: Keamanan ──────────────── */}
         <Section
           icon={<ShieldCheck size={16} style={{ color: 'var(--warning)' }} />}
           title="Keamanan"
@@ -536,8 +452,7 @@ export default function SettingsPage() {
                 display: 'flex', alignItems: 'center', gap: 6,
                 padding: '8px 14px', borderRadius: 9, fontSize: 12, fontWeight: 600,
                 border: '1px solid var(--border)', background: 'var(--bg-elevated)',
-                color: 'var(--text-secondary)', cursor: 'pointer', flexShrink: 0,
-              }}
+                color: 'var(--text-secondary)', cursor: 'pointer', flexShrink: 0}}
             >
               <KeyRound size={13} />
               {hasPin ? 'Ganti PIN' : 'Set PIN'}
@@ -559,8 +474,7 @@ export default function SettingsPage() {
                 display: 'flex', alignItems: 'center', gap: 6,
                 padding: '8px 14px', borderRadius: 9, fontSize: 12, fontWeight: 600,
                 border: '1px solid var(--border)', background: 'var(--bg-elevated)',
-                color: 'var(--text-secondary)', cursor: 'pointer', flexShrink: 0,
-              }}
+                color: 'var(--text-secondary)', cursor: 'pointer', flexShrink: 0}}
             >
               <ShieldCheck size={13} />
               {hasMasterHash ? 'Ganti' : 'Set'}
@@ -581,8 +495,7 @@ export default function SettingsPage() {
               gap: 12,
               padding: '4px 0 14px',
               borderBottom: '1px solid var(--border)',
-              marginBottom: 4,
-            }}
+              marginBottom: 4}}
           >
             <div
               style={{
@@ -594,8 +507,7 @@ export default function SettingsPage() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                flexShrink: 0,
-              }}
+                flexShrink: 0}}
             >
               <Building2 size={22} style={{ color: 'var(--accent)' }} />
             </div>
@@ -613,58 +525,7 @@ export default function SettingsPage() {
           <InfoRow label="Stack" value="Next.js · Firebase · TypeScript" />
           <InfoRow label="Deploy" value="Vercel · Auto" />
 
-          {/* Online status */}
-          <div
-            style={{
-              marginTop: 12,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              padding: '10px 12px',
-              borderRadius: 9,
-              background: isOnline
-                ? 'rgba(16,185,129,0.08)'
-                : 'rgba(239,68,68,0.08)',
-              border: `1px solid ${isOnline ? 'rgba(16,185,129,0.25)' : 'rgba(239,68,68,0.25)'}`,
-            }}
-          >
-            {isOnline
-              ? <Wifi size={14} style={{ color: 'var(--success)', flexShrink: 0 }} />
-              : <WifiOff size={14} style={{ color: 'var(--danger)', flexShrink: 0 }} />
-            }
-            <span
-              style={{
-                fontSize: 12,
-                fontWeight: 600,
-                color: isOnline ? 'var(--success)' : 'var(--danger)',
-              }}
-            >
-              {isOnline ? 'Terhubung ke internet' : 'Tidak ada koneksi'}
-            </span>
-          </div>
-
-          {/* Desa info summary */}
-          {desaInfo.desa && (
-            <div
-              style={{
-                marginTop: 10,
-                padding: '10px 12px',
-                borderRadius: 9,
-                background: 'var(--bg-elevated)',
-                border: '1px solid var(--border)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-              }}
-            >
-              <MapPin size={13} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
-              <span style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.4 }}>
-                Desa {desaInfo.desa}
-                {desaInfo.kecamatan ? `, Kec. ${desaInfo.kecamatan}` : ''}
-              </span>
-            </div>
-          )}
-        </Section>
+                  </Section>
 
       </div>
 

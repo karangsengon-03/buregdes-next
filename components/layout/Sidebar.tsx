@@ -309,19 +309,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           padding: '12px 16px calc(12px + env(safe-area-inset-bottom))',
           borderTop: '1px solid rgba(255,255,255,0.07)',
         }}>
-          {/* Status koneksi */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
-            <span style={{
-              width: 7, height: 7, borderRadius: '50%', flexShrink: 0,
-              background: isOnline ? 'var(--success)' : 'var(--danger)',
-              boxShadow: isOnline ? '0 0 6px var(--success)' : '0 0 6px var(--danger)',
-            }} />
-            <span style={{ fontSize: 12, fontWeight: 500, color: isOnline ? 'var(--success)' : 'var(--danger)' }}>
-              {isOnline ? 'Terhubung ke server' : 'Tidak ada koneksi'}
-            </span>
-          </div>
-
-          {/* User info */}
+                    {/* User info */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
             <div style={{
               width: 34, height: 34, borderRadius: '50%',

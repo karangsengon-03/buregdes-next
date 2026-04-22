@@ -19,15 +19,12 @@ import {
 import { useApp }            from '@/contexts/AppContext'
 import { useBookData }       from '@/hooks/useBookData'
 import { useSearch }         from '@/hooks/useSearch'
-import { usePresence }       from '@/hooks/usePresence'
 import { useHistory }        from '@/hooks/useHistory'
 import { useLock }           from '@/hooks/useLock'
 import { AddRowModal }       from '@/components/ui/AddRowModal'
 import { ConfirmDialog }     from '@/components/ui/ConfirmDialog'
 import { ExportModal }       from '@/components/ui/ExportModal'
-import { SearchBar }         from '@/components/ui/SearchBar'
 import { PrintModal }        from '@/components/ui/PrintModal'
-import { PresenceBadge }     from '@/components/ui/PresenceBadge'
 import { HistoryDrawer }     from '@/components/ui/HistoryDrawer'
 import { LockModal }         from '@/components/ui/LockModal'
 import type { BookRow, HighlightPart } from '@/types'
@@ -224,6 +221,7 @@ function EditableCell({ value, colKey, colType, rowId, readOnly, isMatch, highli
         fontFamily: colType === 'mono'
           ? 'var(--font-mono, "JetBrains Mono", monospace)' : 'inherit',
         background: isMatch && !isEmpty ? 'rgba(59,130,246,0.06)' : 'transparent',
+      borderRight: '1px solid var(--border)',
       }}
       onMouseEnter={e => { if (!readOnly) e.currentTarget.style.background = 'var(--bg-elevated)' }}
       onMouseLeave={e => { e.currentTarget.style.background = isMatch && !isEmpty ? 'rgba(59,130,246,0.06)' : 'transparent' }}
@@ -496,7 +494,6 @@ export default function AppPage() {
   const { activeBook, activeYear, showToast } = useApp()
   const { rows, status, error, addRow, updateCell, deleteRow } = useBookData(activeBook.id, activeYear)
   const { query, setQuery, clearQuery, filteredResults, totalRows, isFiltering, highlightText } = useSearch(rows, activeBook.cols)
-  const { onlineUsers, myUid } = usePresence()
   const { entries: histEntries, status: histStatus, logEdit } = useHistory(activeBook.id)
   const { isGlobalLocked, hasPin, hasMasterHash, unlockedSession, setPin, unlock, lock, toggleRowLock, isRowLocked, verifyMaster, setMasterHash } = useLock(activeYear)
 
@@ -515,6 +512,7 @@ export default function AppPage() {
   const [lockOpen,      setLockOpen]      = useState(false)
   const [lockMode,      setLockMode]      = useState<LockModalMode>('set')
   const [cardEditRow,   setCardEditRow]   = useState<BookRow | null>(null)
+  const [rowHistTarget, setRowHistTarget] = useState<BookRow | null>(null)
 
   const openLock = useCallback(() => {
     if (!hasPin) setLockMode('set')
@@ -564,62 +562,41 @@ export default function AppPage() {
   // ── Sub-header: 2 baris ──────────────────
   const subHeader = (
     <div style={{ background: 'var(--bg-card)', borderBottom: '1px solid var(--border)', flexShrink: 0 }}>
-      {/* Baris 1: identitas buku + presence + search */}
-      <div style={{
-        padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 8,
-        borderBottom: '1px solid rgba(30,58,95,0.5)',
-      }}>
-        <div style={{
-          width: 30, height: 30, borderRadius: 8, flexShrink: 0,
-          background: 'var(--accent-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <BookOpen size={15} style={{ color: 'var(--accent)' }} />
-        </div>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <p style={{ fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)', fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', margin: 0 }}>
-            {activeBook.kode} · TA {activeYear}
-          </p>
-          <h2 style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', margin: 0, lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {activeBook.judul}
-          </h2>
-        </div>
-        <PresenceBadge users={onlineUsers} myUid={myUid} />
-        <SearchBar query={query} onQueryChange={setQuery} onClear={clearQuery} resultCount={filteredResults.length} totalCount={totalRows} isFiltering={isFiltering} />
-      </div>
-
-      {/* Baris 2: action buttons */}
-      <div style={{ padding: '6px 10px', display: 'flex', alignItems: 'center', gap: 4 }}>
+      <div style={{ padding: '0 8px', display: 'flex', alignItems: 'center', gap: 4, height: 44 }}>
         {/* View toggle */}
-        <div style={{ display: 'flex', borderRadius: 7, border: '1px solid var(--border)', overflow: 'hidden', flexShrink: 0, marginRight: 4 }}>
-          <button onClick={() => handleSetViewMode('table')} title="Tabel"
-            style={{ width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', cursor: 'pointer', background: viewMode === 'table' ? 'var(--accent)' : 'transparent', color: viewMode === 'table' ? '#fff' : 'var(--text-muted)' }}>
-            <LayoutList size={15} />
+        <div style={{ display: 'flex', borderRadius: 7, border: '1px solid var(--border)', overflow: 'hidden', flexShrink: 0 }}>
+          <button onClick={() => handleSetViewMode('table')} title="Tampilan Tabel"
+            style={{ width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', cursor: 'pointer', background: viewMode === 'table' ? 'var(--accent)' : 'transparent', color: viewMode === 'table' ? '#fff' : 'var(--text-muted)' }}>
+            <LayoutList size={16} />
           </button>
-          <button onClick={() => handleSetViewMode('card')} title="Card"
-            style={{ width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', borderLeft: '1px solid var(--border)', cursor: 'pointer', background: viewMode === 'card' ? 'var(--accent)' : 'transparent', color: viewMode === 'card' ? '#fff' : 'var(--text-muted)' }}>
-            <LayoutGrid size={15} />
+          <button onClick={() => handleSetViewMode('card')} title="Tampilan Card"
+            style={{ width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', borderLeft: '1px solid var(--border)', cursor: 'pointer', background: viewMode === 'card' ? 'var(--accent)' : 'transparent', color: viewMode === 'card' ? '#fff' : 'var(--text-muted)' }}>
+            <LayoutGrid size={16} />
           </button>
         </div>
 
-        <ActionBtn onClick={() => setHistOpen(true)} title="Riwayat Edit" active={histEntries.length > 0} activeColor="var(--warning)" activeBg="rgba(245,158,11,0.08)">
-          <History size={15} />
+        <div style={{ width: 1, height: 24, background: 'var(--border)', flexShrink: 0, margin: '0 2px' }} />
+
+        <ActionBtn onClick={() => { setRowHistTarget(null); setHistOpen(true) }} title="Riwayat Edit" active={histEntries.length > 0} activeColor="var(--warning)" activeBg="rgba(245,158,11,0.08)">
+          <History size={16} />
         </ActionBtn>
         <ActionBtn onClick={() => setPrintOpen(true)} title="Cetak">
-          <Printer size={15} />
+          <Printer size={16} />
         </ActionBtn>
         <ActionBtn onClick={() => setExportOpen(true)} title="Export / Backup">
-          <FileSpreadsheet size={15} />
-        </ActionBtn>
-        <ActionBtn onClick={openLock} title={isGlobalLocked ? 'Buku terkunci' : hasPin ? 'Ganti PIN' : 'Set PIN'} active={isGlobalLocked} activeColor="var(--warning)" activeBg="rgba(245,158,11,0.10)" activeBorder="rgba(245,158,11,0.4)">
-          {isGlobalLocked ? <Lock size={15} /> : <Unlock size={15} />}
+          <FileSpreadsheet size={16} />
         </ActionBtn>
 
-        <div style={{ flex: 1 }} />
+        <div style={{ width: 1, height: 24, background: 'var(--border)', flexShrink: 0, margin: '0 2px' }} />
 
-        {!isFiltering && !isGlobalLocked && (
-          <button onClick={() => setAddOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 14px', borderRadius: 8, fontSize: 13, fontWeight: 700, background: 'var(--accent)', color: '#fff', border: 'none', cursor: 'pointer', flexShrink: 0 }}>
-            <Plus size={14} />Tambah
-          </button>
+        <ActionBtn onClick={openLock} title={isGlobalLocked ? 'Buku terkunci — tap untuk buka' : hasPin ? 'Ganti PIN' : 'Set PIN Kunci'} active={isGlobalLocked} activeColor="var(--warning)" activeBg="rgba(245,158,11,0.10)" activeBorder="rgba(245,158,11,0.4)">
+          {isGlobalLocked ? <Lock size={16} /> : <Unlock size={16} />}
+        </ActionBtn>
+
+        {isFiltering && (
+          <span style={{ fontSize: 11, color: 'var(--text-muted)', marginLeft: 4 }}>
+            {filteredResults.length}/{totalRows}
+          </span>
         )}
       </div>
     </div>
@@ -685,6 +662,13 @@ export default function AppPage() {
           )}
         </div>
         <AddRowModal open={addOpen} cols={activeBook.cols} onClose={() => setAddOpen(false)} onAdd={handleAdd} />
+        {/* FAB di empty state */}
+        {!isGlobalLocked && (
+          <button onClick={() => setAddOpen(true)} title="Tambah baris baru"
+            style={{ position: 'fixed', right: 16, bottom: 'calc(16px + env(safe-area-inset-bottom))', width: 52, height: 52, borderRadius: '50%', background: 'var(--accent)', color: '#fff', border: 'none', boxShadow: '0 4px 20px rgba(59,130,246,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 20 }}>
+            <Plus size={24} />
+          </button>
+        )}
       </div>
     )
   }
@@ -723,7 +707,7 @@ export default function AppPage() {
                     {col.l}
                   </th>
                 ))}
-                <th style={{ width: 64, padding: '9px 8px 2px' }} />
+                <th style={{ width: 96, padding: '9px 8px 2px', position: 'sticky', right: 0, background: 'var(--bg-table-head)', zIndex: 1 }} />
               </tr>
               {/* Baris 2: nomor kolom — standar format buku register desa */}
               <tr style={{ background: 'var(--bg-table-head)', borderBottom: '2px solid var(--border)' }}>
@@ -733,11 +717,12 @@ export default function AppPage() {
                     fontSize: 11, fontWeight: 600,
                     fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)',
                     color: 'var(--accent)',
+                    borderRight: '1px solid rgba(255,255,255,0.08)',
                   }}>
                     {ci + 1}
                   </th>
                 ))}
-                <th style={{ padding: '2px 8px 8px' }} />
+                <th style={{ padding: '2px 8px 8px', position: 'sticky', right: 0, background: 'var(--bg-table-head)', zIndex: 1 }} />
               </tr>
             </thead>
             <tbody>
@@ -770,23 +755,46 @@ export default function AppPage() {
                         onSave={handleUpdateCell}
                       />
                     ))}
-                    <td style={{ padding: '6px 8px', width: 64, whiteSpace: 'nowrap' }}>
-                      <div style={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+                    <td style={{
+                      padding: '4px 6px', width: 96, whiteSpace: 'nowrap',
+                      position: 'sticky', right: 0, zIndex: 1,
+                      background: rowLocked ? 'rgba(245,158,11,0.04)' : 'var(--bg-app)',
+                      borderLeft: '1px solid var(--border)',
+                    }}>
+                      <div style={{ display: 'flex', gap: 2, justifyContent: 'center', alignItems: 'center' }}>
+                        {/* Log per baris */}
+                        <button
+                          onClick={() => { setRowHistTarget(row); setHistOpen(true) }}
+                          title="Riwayat baris ini"
+                          style={{
+                            width: 28, height: 28, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                            borderRadius: 6, border: 'none', background: 'transparent',
+                            color: 'var(--text-muted)', cursor: 'pointer', flexShrink: 0,
+                          }}
+                          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.12)'; e.currentTarget.style.color = 'var(--warning)' }}
+                          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)' }}
+                        >
+                          <History size={13} />
+                        </button>
+                        {/* Lock per baris */}
                         {!isGlobalLocked && (
                           <button
                             onClick={() => handleToggleRowLock(rowIdx)}
                             title={rowLocked ? 'Buka kunci baris' : 'Kunci baris'}
                             style={{
                               width: 28, height: 28, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                              borderRadius: 6, border: 'none',
+                              borderRadius: 6, border: 'none', flexShrink: 0,
                               background: rowLocked ? 'rgba(245,158,11,0.15)' : 'transparent',
                               color: rowLocked ? 'var(--warning)' : 'var(--text-muted)',
                               cursor: 'pointer',
                             }}
+                            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.18)'; e.currentTarget.style.color = 'var(--warning)' }}
+                            onMouseLeave={e => { e.currentTarget.style.background = rowLocked ? 'rgba(245,158,11,0.15)' : 'transparent'; e.currentTarget.style.color = rowLocked ? 'var(--warning)' : 'var(--text-muted)' }}
                           >
                             <LockKeyhole size={13} />
                           </button>
                         )}
+                        {/* Hapus baris */}
                         {!rowLocked && !isGlobalLocked && (
                           <button
                             onClick={() => setConfirmDelete(row)}
@@ -794,7 +802,7 @@ export default function AppPage() {
                             style={{
                               width: 28, height: 28, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                               borderRadius: 6, border: 'none', background: 'transparent',
-                              color: 'var(--text-muted)', cursor: 'pointer',
+                              color: 'var(--text-muted)', cursor: 'pointer', flexShrink: 0,
                             }}
                             onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.15)'; e.currentTarget.style.color = 'var(--danger)' }}
                             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)' }}
@@ -810,21 +818,7 @@ export default function AppPage() {
             </tbody>
           </table>
 
-          {/* Footer */}
-          <div style={{
-            padding: '10px 14px', fontSize: 12, color: 'var(--text-muted)',
-            borderTop: '1px solid var(--border)',
-            fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)',
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          }}>
-            <span>{isFiltering ? `${filteredRows.length} dari ${totalRows} baris` : `${totalRows} baris`} · {activeBook.kode} · TA {activeYear}</span>
-            {onlineUsers.length > 0 && (
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#10B981', display: 'inline-block' }} />
-                {onlineUsers.length} online
-              </span>
-            )}
-          </div>
+
         </div>
       )}
 
@@ -847,16 +841,35 @@ export default function AppPage() {
               )
             })}
           </div>
-          <div style={{ padding: '10px 14px', fontSize: 12, color: 'var(--text-muted)', borderTop: '1px solid var(--border)', fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span>{isFiltering ? `${filteredRows.length} dari ${totalRows} baris` : `${totalRows} baris`} · {activeBook.kode} · TA {activeYear}</span>
-            {onlineUsers.length > 0 && (
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#10B981', display: 'inline-block' }} />
-                {onlineUsers.length} online
-              </span>
-            )}
-          </div>
+
         </div>
+      )}
+
+      {/* ── FAB Tambah ── */}
+      {!isFiltering && !isGlobalLocked && (
+        <button
+          onClick={() => setAddOpen(true)}
+          title="Tambah baris baru"
+          style={{
+            position: 'fixed',
+            right: 16,
+            bottom: 'calc(16px + env(safe-area-inset-bottom))',
+            width: 52, height: 52,
+            borderRadius: '50%',
+            background: 'var(--accent)',
+            color: '#fff',
+            border: 'none',
+            boxShadow: '0 4px 20px rgba(59,130,246,0.5)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer',
+            zIndex: 20,
+            transition: 'transform 150ms, box-shadow 150ms',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.08)'; e.currentTarget.style.boxShadow = '0 6px 24px rgba(59,130,246,0.65)' }}
+          onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(59,130,246,0.5)' }}
+        >
+          <Plus size={24} />
+        </button>
       )}
 
       {/* ── Modals ── */}
@@ -868,7 +881,19 @@ export default function AppPage() {
       />
       <ExportModal open={exportOpen} book={activeBook} rows={rows} year={activeYear} onClose={() => setExportOpen(false)} />
       <PrintModal open={printOpen} book={activeBook} rows={rows} filtered={filteredRows} year={activeYear} isFiltering={isFiltering} onClose={() => setPrintOpen(false)} />
-      <HistoryDrawer open={histOpen} entries={histEntries} status={histStatus} bookName={`${activeBook.kode} — ${activeBook.judul}`} onClose={() => setHistOpen(false)} />
+      <HistoryDrawer
+        open={histOpen}
+        entries={rowHistTarget
+          ? histEntries.filter(e => rows[e.ri]?._id === rowHistTarget._id)
+          : histEntries
+        }
+        status={histStatus}
+        bookName={rowHistTarget
+          ? `${activeBook.kode} — Baris No. ${rowHistTarget.no}`
+          : `${activeBook.kode} — ${activeBook.judul}`
+        }
+        onClose={() => { setHistOpen(false); setRowHistTarget(null) }}
+      />
       <LockModal open={lockOpen} mode={lockMode} hasMasterHash={hasMasterHash} onClose={() => setLockOpen(false)} onSetPin={setPin} onUnlock={unlock} onVerifyMaster={verifyMaster} onSetMaster={setMasterHash} />
       {cardEditRow && (
         <CardEditModal

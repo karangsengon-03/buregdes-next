@@ -54,10 +54,10 @@
 
 /* ── CSS Variables — Light Mode ──────────────────────── */
 [data-theme="light"] {
-  --bg-app:          #F0F4F8;
+  --bg-app:          #EEF2F7;
   --bg-card:         #FFFFFF;
   --bg-sidebar:      #1A3C5E;
-  --bg-elevated:     #FFFFFF;
+  --bg-elevated:     #F8FAFC;
   --bg-input:        #FFFFFF;
   --bg-table-head:   #1A3C5E;
   --bg-table-even:   #F8FAFC;
