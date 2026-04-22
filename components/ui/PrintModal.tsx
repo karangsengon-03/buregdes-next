@@ -6,7 +6,7 @@
 // ─────────────────────────────────────────────
 
 import { useState, useEffect, useCallback } from 'react'
-import { Printer, X, FileText, Filter, Check } from 'lucide-react'
+import { Printer, X, FileText, Filter, Check, AlertTriangle } from 'lucide-react'
 import { useDesaInfo } from '@/hooks/useDesaInfo'
 import { usePrint } from '@/hooks/usePrint'
 import type { BookDef, BookRow } from '@/types'
@@ -489,8 +489,9 @@ export function PrintModal({
               border: '1px solid rgba(245,158,11,0.25)',
               marginBottom: 16,
             }}>
-              <p style={{ fontSize: 12, color: 'var(--warning)', margin: 0, lineHeight: 1.5 }}>
-                ⚠️ Info Desa belum diisi — kop surat akan kosong.
+              <p style={{ fontSize: 12, color: 'var(--warning)', margin: 0, lineHeight: 1.5, display: 'flex', alignItems: 'flex-start', gap: 6 }}>
+                <AlertTriangle size={13} style={{ flexShrink: 0, marginTop: 1 }} />
+                Info Desa belum diisi — kop surat akan kosong.
                 <br />
                 <span style={{ color: 'var(--text-muted)', fontSize: 11 }}>
                   Lengkapi di menu Pengaturan.
