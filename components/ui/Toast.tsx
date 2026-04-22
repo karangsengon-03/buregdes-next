@@ -36,7 +36,7 @@ export function Toast() {
         role="alert"
         style={{
           position: 'fixed',
-          bottom: 72,    // di atas BottomNav (52px) + sedikit gap
+          bottom: 16,    // tidak ada BottomNav lagi
           left: '50%',
           transform: 'translateX(-50%)',
           zIndex: 999,

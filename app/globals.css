@@ -229,3 +229,14 @@ html, body {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
+
+/* ── Data cell text colors (lansia-friendly, kontras tinggi) ─── */
+:root,
+[data-theme="dark"] {
+  --data-text: #F5A623;   /* amber warm — kontras di bg gelap */
+  --data-mono: #FBBF24;   /* amber lebih terang untuk mono/kode */
+}
+[data-theme="light"] {
+  --data-text: #1A3C5E;   /* navy gelap — kontras di bg terang */
+  --data-mono: #1D4ED8;   /* biru gelap untuk mono/kode */
+}

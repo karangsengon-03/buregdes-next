@@ -1,8 +1,12 @@
 'use client'
 // ─────────────────────────────────────────────
-// BuRegDes Next — /app page (Session 11)
-// + Card View + Table/Card view toggle
-// + viewMode persisted ke localStorage
+// BuRegDes Next — /app page (Session 12)
+// Perbaikan UX:
+// - Format tabel standar: nomor kolom di bawah label header (seperti versi lama)
+// - Teks data berwarna amber (#F59E0B) untuk keterbacaan lansia
+// - Font tabel 14px (naik dari 13px)
+// - Sub-header 2 baris: baris atas = judul buku, baris bawah = action buttons
+// - Kolom Kepada/Dari/Ket sudah ada di A5-A6
 // ─────────────────────────────────────────────
 
 import { useState, useCallback, useRef, useEffect } from 'react'
@@ -31,12 +35,55 @@ import type { LockModalMode } from '@/components/ui/LockModal'
 
 type ViewMode = 'table' | 'card'
 
+// Warna teks data utama (amber seperti versi lama)
+const DATA_COLOR = 'var(--data-text)'
+const DATA_MONO  = 'var(--data-mono)'
+
+// ── ActionBtn helper ──────────────────────────
+function ActionBtn({
+  onClick, title, children,
+  active = false,
+  activeColor = 'var(--accent)',
+  activeBg = 'var(--accent-subtle)',
+  activeBorder,
+}: {
+  onClick: () => void
+  title: string
+  children: React.ReactNode
+  active?: boolean
+  activeColor?: string
+  activeBg?: string
+  activeBorder?: string
+}) {
+  return (
+    <button
+      onClick={onClick}
+      title={title}
+      style={{
+        width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        borderRadius: 8, flexShrink: 0, cursor: 'pointer',
+        border: `1px solid ${active && activeBorder ? activeBorder : 'var(--border)'}`,
+        background: active ? activeBg : 'transparent',
+        color: active ? activeColor : 'var(--text-muted)',
+        transition: 'background 150ms, color 150ms',
+      }}
+      onMouseEnter={e => { e.currentTarget.style.background = activeBg; e.currentTarget.style.color = activeColor }}
+      onMouseLeave={e => {
+        e.currentTarget.style.background = active ? activeBg : 'transparent'
+        e.currentTarget.style.color = active ? activeColor : 'var(--text-muted)'
+      }}
+    >
+      {children}
+    </button>
+  )
+}
+
 // ── Skeleton loading row ──────────────────────
 function SkeletonRow({ colCount }: { colCount: number }) {
   return (
     <tr>
       {Array.from({ length: colCount }).map((_, i) => (
-        <td key={i} style={{ padding: '10px 12px' }}>
+        <td key={i} style={{ padding: '11px 12px' }}>
           <div style={{
             height: 12, borderRadius: 4, background: 'var(--border)',
             width: i === 0 ? 28 : i === colCount - 1 ? '60%' : '80%',
@@ -44,7 +91,7 @@ function SkeletonRow({ colCount }: { colCount: number }) {
           }} />
         </td>
       ))}
-      <td style={{ padding: '10px 8px', width: 36 }} />
+      <td style={{ padding: '11px 8px', width: 36 }} />
     </tr>
   )
 }
@@ -120,7 +167,7 @@ function EditableCell({ value, colKey, colType, rowId, readOnly, isMatch, highli
   }
 
   const commit = async () => {
-    const trimmed = draft.trim()
+    const trimmed  = draft.trim()
     const original = value !== undefined && value !== null ? String(value) : ''
     if (trimmed === original) { setEditing(false); return }
     setSaving(true)
@@ -139,7 +186,7 @@ function EditableCell({ value, colKey, colType, rowId, readOnly, isMatch, highli
 
   if (editing) {
     return (
-      <td style={{ padding: '4px 6px', minWidth: colType === 'date' ? 120 : undefined }}>
+      <td style={{ padding: '4px 6px', minWidth: colType === 'date' ? 130 : undefined }}>
         <input
           ref={inputRef}
           type={colType === 'date' ? 'date' : 'text'}
@@ -149,7 +196,7 @@ function EditableCell({ value, colKey, colType, rowId, readOnly, isMatch, highli
           onKeyDown={handleKey}
           disabled={saving}
           style={{
-            width: '100%', padding: '5px 8px', fontSize: 13, borderRadius: 6,
+            width: '100%', padding: '6px 8px', fontSize: 14, borderRadius: 6,
             border: '1.5px solid var(--accent)',
             background: 'var(--bg-elevated)', color: 'var(--text-primary)',
             outline: 'none',
@@ -161,15 +208,17 @@ function EditableCell({ value, colKey, colType, rowId, readOnly, isMatch, highli
     )
   }
 
-  const highlightParts = isMatch && !isEmpty
-    ? highlightText(displayValue) : null
+  const highlightParts = isMatch && !isEmpty ? highlightText(displayValue) : null
+
+  // Warna teks: kosong (muted), mono (amber terang), data biasa (amber)
+  const textColor = isEmpty ? 'var(--text-muted)' : colType === 'mono' ? DATA_MONO : DATA_COLOR
 
   return (
     <td
       onClick={startEdit}
       style={{
-        padding: '10px 12px', fontSize: 13,
-        color: isEmpty ? 'var(--text-muted)' : 'var(--text-primary)',
+        padding: '11px 12px', fontSize: 14,
+        color: textColor,
         cursor: readOnly ? 'default' : 'pointer',
         transition: 'background 120ms',
         fontFamily: colType === 'mono'
@@ -197,8 +246,8 @@ interface CardEditModalProps {
 }
 
 function CardEditModal({ open, row, cols, locked, onClose, onSave }: CardEditModalProps) {
-  const [draft,   setDraft]   = useState<Record<string, string>>({})
-  const [saving,  setSaving]  = useState(false)
+  const [draft,  setDraft]  = useState<Record<string, string>>({})
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     if (open) {
@@ -219,9 +268,7 @@ function CardEditModal({ open, row, cols, locked, onClose, onSave }: CardEditMod
         if (c.ro) continue
         const original = row[c.k] !== undefined && row[c.k] !== null ? String(row[c.k]) : ''
         const next     = (draft[c.k] ?? '').trim()
-        if (next !== original) {
-          await onSave(row._id ?? '', c.k, next)
-        }
+        if (next !== original) await onSave(row._id ?? '', c.k, next)
       }
       onClose()
     } finally {
@@ -250,31 +297,24 @@ function CardEditModal({ open, row, cols, locked, onClose, onSave }: CardEditMod
           maxHeight: '85vh', overflowY: 'auto',
         }}
       >
-        {/* Handle */}
-        <div style={{
-          width: 36, height: 4, borderRadius: 2,
-          background: 'var(--border)', margin: '0 auto 14px',
-        }} />
-
-        <p style={{ margin: '0 0 14px', fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>
+        <div style={{ width: 36, height: 4, borderRadius: 2, background: 'var(--border)', margin: '0 auto 14px' }} />
+        <p style={{ margin: '0 0 14px', fontSize: 15, fontWeight: 700, color: 'var(--text-primary)' }}>
           Edit Baris No. {row.no}
         </p>
-
         {locked && (
           <div style={{
             padding: '8px 12px', borderRadius: 8, marginBottom: 12,
             background: 'rgba(245,158,11,0.10)', border: '1px solid rgba(245,158,11,0.25)',
-            fontSize: 12, color: 'var(--warning)',
+            fontSize: 13, color: 'var(--warning)',
             display: 'flex', alignItems: 'center', gap: 6,
           }}>
-            <LockKeyhole size={12} /> Baris ini terkunci — tidak bisa diedit
+            <LockKeyhole size={13} /> Baris ini terkunci — tidak bisa diedit
           </div>
         )}
-
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {cols.filter(c => !c.ro).map(col => (
             <div key={col.k}>
-              <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: 4 }}>
+              <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: 4 }}>
                 {col.l}
               </label>
               <input
@@ -283,7 +323,7 @@ function CardEditModal({ open, row, cols, locked, onClose, onSave }: CardEditMod
                 onChange={e => setDraft(prev => ({ ...prev, [col.k]: e.target.value }))}
                 disabled={locked || saving}
                 style={{
-                  width: '100%', padding: '8px 10px', fontSize: 13,
+                  width: '100%', padding: '9px 10px', fontSize: 14,
                   borderRadius: 8, border: '1.5px solid var(--border)',
                   background: locked ? 'var(--bg-card)' : 'var(--bg-input)',
                   color: 'var(--text-primary)', outline: 'none',
@@ -297,30 +337,25 @@ function CardEditModal({ open, row, cols, locked, onClose, onSave }: CardEditMod
             </div>
           ))}
         </div>
-
         <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
           <button
             onClick={onClose}
             style={{
-              flex: 1, padding: '9px', borderRadius: 9, fontSize: 13, fontWeight: 600,
+              flex: 1, padding: '10px', borderRadius: 9, fontSize: 14, fontWeight: 600,
               border: '1px solid var(--border)', background: 'transparent',
               color: 'var(--text-secondary)', cursor: 'pointer',
             }}
-          >
-            Batal
-          </button>
+          >Batal</button>
           {!locked && (
             <button
               onClick={handleSave}
               disabled={saving}
               style={{
-                flex: 2, padding: '9px', borderRadius: 9, fontSize: 13, fontWeight: 700,
+                flex: 2, padding: '10px', borderRadius: 9, fontSize: 14, fontWeight: 700,
                 border: 'none', background: 'var(--accent)', color: '#fff',
                 cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.7 : 1,
               }}
-            >
-              {saving ? 'Menyimpan...' : 'Simpan'}
-            </button>
+            >{saving ? 'Menyimpan...' : 'Simpan'}</button>
           )}
         </div>
       </div>
@@ -330,16 +365,16 @@ function CardEditModal({ open, row, cols, locked, onClose, onSave }: CardEditMod
 
 // ── Entry Card ────────────────────────────────
 interface EntryCardProps {
-  row:              BookRow
-  rowIdx:           number
-  cols:             { k: string; l: string; type?: string; w?: number; ro?: boolean }[]
-  isLocked:         boolean
-  globalLocked:     boolean
-  isMatch:          boolean
-  highlightText:    (text: string) => HighlightPart[]
-  onEdit:           (row: BookRow) => void
-  onDelete:         (row: BookRow) => void
-  onToggleLock:     (ri: number) => void
+  row:           BookRow
+  rowIdx:        number
+  cols:          { k: string; l: string; type?: string; w?: number; ro?: boolean }[]
+  isLocked:      boolean
+  globalLocked:  boolean
+  isMatch:       boolean
+  highlightText: (text: string) => HighlightPart[]
+  onEdit:        (row: BookRow) => void
+  onDelete:      (row: BookRow) => void
+  onToggleLock:  (ri: number) => void
 }
 
 function EntryCard({
@@ -347,8 +382,6 @@ function EntryCard({
   highlightText, onEdit, onDelete, onToggleLock,
 }: EntryCardProps) {
   const [expanded, setExpanded] = useState(false)
-
-  // Show first 2 non-ro content cols collapsed, rest on expand
   const contentCols = cols.filter(c => !c.ro)
   const previewCols = contentCols.slice(0, 2)
   const extraCols   = contentCols.slice(2)
@@ -357,16 +390,16 @@ function EntryCard({
   const renderVal = (col: typeof cols[0], val: string | number | undefined) => {
     const display = val !== undefined && val !== null && val !== '' ? String(val) : '—'
     const isEmpty = display === '—'
-    if (isMatch && !isEmpty && highlightText) {
+    const color   = isEmpty ? 'var(--text-muted)' : col.type === 'mono' ? DATA_MONO : DATA_COLOR
+    if (isMatch && !isEmpty) {
       const parts = highlightText(display)
       return <HighlightedText parts={parts} colType={col.type} />
     }
     return (
       <span style={{
-        color: isEmpty ? 'var(--text-muted)' : 'var(--text-primary)',
-        fontFamily: col.type === 'mono'
-          ? 'var(--font-mono, "JetBrains Mono", monospace)' : 'inherit',
-        fontSize: 13,
+        color,
+        fontFamily: col.type === 'mono' ? 'var(--font-mono, "JetBrains Mono", monospace)' : 'inherit',
+        fontSize: 14,
       }}>
         {display}
       </span>
@@ -375,111 +408,58 @@ function EntryCard({
 
   return (
     <div style={{
-      background: isLocked
-        ? 'rgba(245,158,11,0.05)'
-        : isMatch ? 'rgba(59,130,246,0.05)' : 'var(--bg-card)',
+      background: isLocked ? 'rgba(245,158,11,0.05)' : isMatch ? 'rgba(59,130,246,0.05)' : 'var(--bg-card)',
       borderRadius: 12,
       border: `1px solid ${isLocked ? 'rgba(245,158,11,0.25)' : isMatch ? 'rgba(59,130,246,0.25)' : 'var(--border)'}`,
-      transition: 'border-color 150ms, background 150ms',
       overflow: 'hidden',
     }}>
-      {/* Card header: nomor + badge + actions */}
       <div style={{
-        padding: '10px 12px',
-        display: 'flex', alignItems: 'center', gap: 8,
+        padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 8,
         borderBottom: '1px solid var(--border)',
       }}>
-        {/* Nomor badge */}
         <span style={{
-          minWidth: 28, height: 28,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          minWidth: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center',
           borderRadius: 7, flexShrink: 0,
           background: isLocked ? 'rgba(245,158,11,0.15)' : 'var(--accent-subtle)',
           color: isLocked ? 'var(--warning)' : 'var(--accent)',
           fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)',
-          fontSize: 11, fontWeight: 700,
+          fontSize: 12, fontWeight: 700,
         }}>
           {row.no ?? rowIdx + 1}
         </span>
-
         {isLocked && (
           <span style={{
             fontSize: 10, fontWeight: 600, color: 'var(--warning)',
-            background: 'rgba(245,158,11,0.12)', borderRadius: 5,
-            padding: '2px 7px',
-          }}>
-            Terkunci
-          </span>
+            background: 'rgba(245,158,11,0.12)', borderRadius: 5, padding: '2px 7px',
+          }}>Terkunci</span>
         )}
-
         <div style={{ flex: 1 }} />
-
-        {/* Actions */}
         <div style={{ display: 'flex', gap: 4 }}>
-          {/* Toggle row lock */}
           {!globalLocked && (
-            <button
-              onClick={() => onToggleLock(rowIdx)}
-              title={isLocked ? 'Buka kunci baris' : 'Kunci baris'}
+            <button onClick={() => onToggleLock(rowIdx)} title={isLocked ? 'Buka kunci' : 'Kunci baris'}
               style={{
-                width: 28, height: 28,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
                 borderRadius: 7, border: 'none',
                 background: isLocked ? 'rgba(245,158,11,0.15)' : 'transparent',
-                color: isLocked ? 'var(--warning)' : 'var(--text-muted)',
-                cursor: 'pointer', transition: 'background 120ms, color 120ms',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.18)'; e.currentTarget.style.color = 'var(--warning)' }}
-              onMouseLeave={e => {
-                e.currentTarget.style.background = isLocked ? 'rgba(245,158,11,0.15)' : 'transparent'
-                e.currentTarget.style.color = isLocked ? 'var(--warning)' : 'var(--text-muted)'
-              }}
-            >
-              <LockKeyhole size={13} />
+                color: isLocked ? 'var(--warning)' : 'var(--text-muted)', cursor: 'pointer',
+              }}>
+              <LockKeyhole size={14} />
             </button>
           )}
-
-          {/* Edit */}
           {!isLocked && !globalLocked && (
-            <button
-              onClick={() => onEdit(row)}
-              title="Edit baris"
-              style={{
-                width: 28, height: 28,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                borderRadius: 7, border: 'none', background: 'transparent',
-                color: 'var(--text-muted)', cursor: 'pointer',
-                transition: 'background 120ms, color 120ms',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(59,130,246,0.12)'; e.currentTarget.style.color = 'var(--accent)' }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)' }}
-            >
-              <Pencil size={13} />
+            <button onClick={() => onEdit(row)} title="Edit"
+              style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 7, border: 'none', background: 'transparent', color: 'var(--text-muted)', cursor: 'pointer' }}>
+              <Pencil size={14} />
             </button>
           )}
-
-          {/* Delete */}
           {!isLocked && !globalLocked && (
-            <button
-              onClick={() => onDelete(row)}
-              title="Hapus baris"
-              style={{
-                width: 28, height: 28,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                borderRadius: 7, border: 'none', background: 'transparent',
-                color: 'var(--text-muted)', cursor: 'pointer',
-                transition: 'background 120ms, color 120ms',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.12)'; e.currentTarget.style.color = 'var(--danger)' }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)' }}
-            >
-              <Trash2 size={13} />
+            <button onClick={() => onDelete(row)} title="Hapus"
+              style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 7, border: 'none', background: 'transparent', color: 'var(--text-muted)', cursor: 'pointer' }}>
+              <Trash2 size={14} />
             </button>
           )}
         </div>
       </div>
-
-      {/* Card body: field values */}
       <div style={{ padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: 8 }}>
         {previewCols.map(col => (
           <div key={col.k}>
@@ -489,27 +469,18 @@ function EntryCard({
             <div>{renderVal(col, row[col.k] as string | number | undefined)}</div>
           </div>
         ))}
-
-        {/* Expandable extra fields */}
         {hasExtra && (
           <>
             {expanded && extraCols.map(col => (
-              <div key={col.k} style={{ animation: 'fadeIn 150ms ease' }}>
+              <div key={col.k}>
                 <p style={{ margin: '0 0 2px', fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   {col.l}
                 </p>
                 <div>{renderVal(col, row[col.k] as string | number | undefined)}</div>
               </div>
             ))}
-            <button
-              onClick={() => setExpanded(v => !v)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 4,
-                padding: '5px 0', background: 'none', border: 'none',
-                fontSize: 11, fontWeight: 600, color: 'var(--accent)',
-                cursor: 'pointer', alignSelf: 'flex-start',
-              }}
-            >
+            <button onClick={() => setExpanded(v => !v)}
+              style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 0', background: 'none', border: 'none', fontSize: 12, fontWeight: 600, color: 'var(--accent)', cursor: 'pointer', alignSelf: 'flex-start' }}>
               {expanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
               {expanded ? 'Sembunyikan' : `${extraCols.length} kolom lagi`}
             </button>
@@ -523,95 +494,57 @@ function EntryCard({
 // ── Main page ─────────────────────────────────
 export default function AppPage() {
   const { activeBook, activeYear, showToast } = useApp()
-  const { rows, status, error, addRow, updateCell, deleteRow } = useBookData(
-    activeBook.id, activeYear
-  )
-
-  const {
-    query, setQuery, clearQuery,
-    filteredResults, totalRows, isFiltering, highlightText,
-  } = useSearch(rows, activeBook.cols)
-
+  const { rows, status, error, addRow, updateCell, deleteRow } = useBookData(activeBook.id, activeYear)
+  const { query, setQuery, clearQuery, filteredResults, totalRows, isFiltering, highlightText } = useSearch(rows, activeBook.cols)
   const { onlineUsers, myUid } = usePresence()
   const { entries: histEntries, status: histStatus, logEdit } = useHistory(activeBook.id)
+  const { isGlobalLocked, hasPin, hasMasterHash, unlockedSession, setPin, unlock, lock, toggleRowLock, isRowLocked, verifyMaster, setMasterHash } = useLock(activeYear)
 
-  const {
-    isGlobalLocked, hasPin, hasMasterHash,
-    unlockedSession,
-    setPin, unlock, lock,
-    toggleRowLock, isRowLocked,
-    verifyMaster, setMasterHash,
-  } = useLock(activeYear)
-
-  // ── View mode (table | card), persisted ──────
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
-    if (typeof window !== 'undefined') {
-      return (localStorage.getItem('brViewMode') as ViewMode) ?? 'table'
-    }
+    if (typeof window !== 'undefined') return (localStorage.getItem('brViewMode') as ViewMode) ?? 'table'
     return 'table'
   })
+  const handleSetViewMode = (mode: ViewMode) => { setViewMode(mode); localStorage.setItem('brViewMode', mode) }
 
-  const handleSetViewMode = (mode: ViewMode) => {
-    setViewMode(mode)
-    localStorage.setItem('brViewMode', mode)
-  }
-
-  const [addOpen,        setAddOpen]        = useState(false)
-  const [confirmDelete,  setConfirmDelete]  = useState<BookRow | null>(null)
-  const [deleting,       setDeleting]       = useState(false)
-  const [exportOpen,     setExportOpen]     = useState(false)
-  const [printOpen,      setPrintOpen]      = useState(false)
-  const [histOpen,       setHistOpen]       = useState(false)
-  const [lockOpen,       setLockOpen]       = useState(false)
-  const [lockMode,       setLockMode]       = useState<LockModalMode>('set')
-  const [cardEditRow,    setCardEditRow]    = useState<BookRow | null>(null)
+  const [addOpen,       setAddOpen]       = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState<BookRow | null>(null)
+  const [deleting,      setDeleting]      = useState(false)
+  const [exportOpen,    setExportOpen]    = useState(false)
+  const [printOpen,     setPrintOpen]     = useState(false)
+  const [histOpen,      setHistOpen]      = useState(false)
+  const [lockOpen,      setLockOpen]      = useState(false)
+  const [lockMode,      setLockMode]      = useState<LockModalMode>('set')
+  const [cardEditRow,   setCardEditRow]   = useState<BookRow | null>(null)
 
   const openLock = useCallback(() => {
-    if (!hasPin)            setLockMode('set')
+    if (!hasPin) setLockMode('set')
     else if (isGlobalLocked) setLockMode('unlock')
-    else                    setLockMode('change')
+    else setLockMode('change')
     setLockOpen(true)
   }, [hasPin, isGlobalLocked])
 
   const handleToggleRowLock = useCallback(async (ri: number) => {
-    try {
-      await toggleRowLock(activeBook.id, ri, activeYear)
-    } catch {
-      showToast({ message: 'Gagal mengubah kunci baris', variant: 'error' })
-    }
+    try { await toggleRowLock(activeBook.id, ri, activeYear) }
+    catch { showToast({ message: 'Gagal mengubah kunci baris', variant: 'error' }) }
   }, [toggleRowLock, activeBook.id, activeYear, showToast])
 
-  const handleAdd = useCallback(
-    async (data: Record<string, string | number>) => {
-      try {
-        await addRow(data)
-        showToast({ message: 'Baris berhasil ditambahkan', variant: 'success' })
-      } catch {
-        showToast({ message: 'Gagal menambah baris', variant: 'error' })
-        throw new Error('add failed')
-      }
-    },
-    [addRow, showToast]
-  )
+  const handleAdd = useCallback(async (data: Record<string, string | number>) => {
+    try { await addRow(data); showToast({ message: 'Baris berhasil ditambahkan', variant: 'success' }) }
+    catch { showToast({ message: 'Gagal menambah baris', variant: 'error' }); throw new Error('add failed') }
+  }, [addRow, showToast])
 
-  const handleUpdateCell = useCallback(
-    async (rowId: string, field: string, value: string | number) => {
-      const ri    = rows.findIndex(r => r._id === rowId)
-      const col   = activeBook.cols.find(c => c.k === field)
-      const label = col?.l ?? field
-      try {
-        await updateCell(rowId, field, value)
-        showToast({ message: 'Perubahan tersimpan', variant: 'success', duration: 1500 })
-        if (ri >= 0) {
-          logEdit({ bookId: activeBook.id, ri, key: field, colLabel: label, newVal: value })
-            .catch(() => {})
-        }
-      } catch {
-        showToast({ message: 'Gagal menyimpan perubahan', variant: 'error' })
-      }
-    },
-    [updateCell, showToast, rows, activeBook, logEdit]
-  )
+  const handleUpdateCell = useCallback(async (rowId: string, field: string, value: string | number) => {
+    const ri    = rows.findIndex(r => r._id === rowId)
+    const col   = activeBook.cols.find(c => c.k === field)
+    const label = col?.l ?? field
+    try {
+      await updateCell(rowId, field, value)
+      showToast({ message: 'Perubahan tersimpan', variant: 'success', duration: 1500 })
+      if (ri >= 0) logEdit({ bookId: activeBook.id, ri, key: field, colLabel: label, newVal: value }).catch(() => {})
+    } catch {
+      showToast({ message: 'Gagal menyimpan perubahan', variant: 'error' })
+    }
+  }, [updateCell, showToast, rows, activeBook, logEdit])
 
   const handleDeleteConfirm = useCallback(async () => {
     if (!confirmDelete?._id) return
@@ -622,315 +555,154 @@ export default function AppPage() {
       setConfirmDelete(null)
     } catch {
       showToast({ message: 'Gagal menghapus baris', variant: 'error' })
-    } finally {
-      setDeleting(false)
-    }
+    } finally { setDeleting(false) }
   }, [confirmDelete, deleteRow, showToast])
 
   const filteredRows = filteredResults.map(r => r.row)
   const displayRows  = isFiltering ? filteredRows : rows
 
-  // ── Sub-header ──────────────────────────────
+  // ── Sub-header: 2 baris ──────────────────
   const subHeader = (
-    <div style={{
-      padding: '10px 12px', background: 'var(--bg-card)',
-      borderBottom: '1px solid var(--border)',
-      display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0,
-    }}>
-      {/* Ikon buku */}
+    <div style={{ background: 'var(--bg-card)', borderBottom: '1px solid var(--border)', flexShrink: 0 }}>
+      {/* Baris 1: identitas buku + presence + search */}
       <div style={{
-        width: 32, height: 32, borderRadius: 8, flexShrink: 0,
-        background: 'var(--accent-subtle)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 8,
+        borderBottom: '1px solid rgba(30,58,95,0.5)',
       }}>
-        <BookOpen size={16} style={{ color: 'var(--accent)' }} />
-      </div>
-
-      {/* Identitas buku */}
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <p style={{
-          fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)',
-          fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', margin: 0,
+        <div style={{
+          width: 30, height: 30, borderRadius: 8, flexShrink: 0,
+          background: 'var(--accent-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
-          {activeBook.kode} · TA {activeYear}
-        </p>
-        <h2 style={{
-          fontSize: 13, fontWeight: 700, color: 'var(--text-primary)',
-          margin: 0, lineHeight: 1.2,
-          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-        }}>
-          {activeBook.judul}
-        </h2>
+          <BookOpen size={15} style={{ color: 'var(--accent)' }} />
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <p style={{ fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)', fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', margin: 0 }}>
+            {activeBook.kode} · TA {activeYear}
+          </p>
+          <h2 style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', margin: 0, lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {activeBook.judul}
+          </h2>
+        </div>
+        <PresenceBadge users={onlineUsers} myUid={myUid} />
+        <SearchBar query={query} onQueryChange={setQuery} onClear={clearQuery} resultCount={filteredResults.length} totalCount={totalRows} isFiltering={isFiltering} />
       </div>
 
-      {/* Presence badge */}
-      <PresenceBadge users={onlineUsers} myUid={myUid} />
+      {/* Baris 2: action buttons */}
+      <div style={{ padding: '6px 10px', display: 'flex', alignItems: 'center', gap: 4 }}>
+        {/* View toggle */}
+        <div style={{ display: 'flex', borderRadius: 7, border: '1px solid var(--border)', overflow: 'hidden', flexShrink: 0, marginRight: 4 }}>
+          <button onClick={() => handleSetViewMode('table')} title="Tabel"
+            style={{ width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', cursor: 'pointer', background: viewMode === 'table' ? 'var(--accent)' : 'transparent', color: viewMode === 'table' ? '#fff' : 'var(--text-muted)' }}>
+            <LayoutList size={15} />
+          </button>
+          <button onClick={() => handleSetViewMode('card')} title="Card"
+            style={{ width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', borderLeft: '1px solid var(--border)', cursor: 'pointer', background: viewMode === 'card' ? 'var(--accent)' : 'transparent', color: viewMode === 'card' ? '#fff' : 'var(--text-muted)' }}>
+            <LayoutGrid size={15} />
+          </button>
+        </div>
 
-      {/* SearchBar */}
-      <SearchBar
-        query={query} onQueryChange={setQuery} onClear={clearQuery}
-        resultCount={filteredResults.length} totalCount={totalRows} isFiltering={isFiltering}
-      />
+        <ActionBtn onClick={() => setHistOpen(true)} title="Riwayat Edit" active={histEntries.length > 0} activeColor="var(--warning)" activeBg="rgba(245,158,11,0.08)">
+          <History size={15} />
+        </ActionBtn>
+        <ActionBtn onClick={() => setPrintOpen(true)} title="Cetak">
+          <Printer size={15} />
+        </ActionBtn>
+        <ActionBtn onClick={() => setExportOpen(true)} title="Export / Backup">
+          <FileSpreadsheet size={15} />
+        </ActionBtn>
+        <ActionBtn onClick={openLock} title={isGlobalLocked ? 'Buku terkunci' : hasPin ? 'Ganti PIN' : 'Set PIN'} active={isGlobalLocked} activeColor="var(--warning)" activeBg="rgba(245,158,11,0.10)" activeBorder="rgba(245,158,11,0.4)">
+          {isGlobalLocked ? <Lock size={15} /> : <Unlock size={15} />}
+        </ActionBtn>
 
-      {/* View toggle — Table / Card */}
-      <div style={{
-        display: 'flex', borderRadius: 8, border: '1px solid var(--border)',
-        overflow: 'hidden', flexShrink: 0,
-      }}>
-        <button
-          onClick={() => handleSetViewMode('table')}
-          title="Tampilan Tabel"
-          style={{
-            width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
-            border: 'none', cursor: 'pointer', transition: 'background 120ms, color 120ms',
-            background: viewMode === 'table' ? 'var(--accent)' : 'transparent',
-            color:      viewMode === 'table' ? '#fff'          : 'var(--text-muted)',
-          }}
-        >
-          <LayoutList size={14} />
-        </button>
-        <button
-          onClick={() => handleSetViewMode('card')}
-          title="Tampilan Card"
-          style={{
-            width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
-            border: 'none', borderLeft: '1px solid var(--border)', cursor: 'pointer',
-            transition: 'background 120ms, color 120ms',
-            background: viewMode === 'card' ? 'var(--accent)' : 'transparent',
-            color:      viewMode === 'card' ? '#fff'          : 'var(--text-muted)',
-          }}
-        >
-          <LayoutGrid size={14} />
-        </button>
+        <div style={{ flex: 1 }} />
+
+        {!isFiltering && !isGlobalLocked && (
+          <button onClick={() => setAddOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 14px', borderRadius: 8, fontSize: 13, fontWeight: 700, background: 'var(--accent)', color: '#fff', border: 'none', cursor: 'pointer', flexShrink: 0 }}>
+            <Plus size={14} />Tambah
+          </button>
+        )}
       </div>
-
-      {/* Riwayat */}
-      <button
-        onClick={() => setHistOpen(true)}
-        title="Riwayat Perubahan"
-        style={{
-          width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
-          borderRadius: 8, border: '1px solid var(--border)',
-          background: histEntries.length > 0 ? 'rgba(245,158,11,0.08)' : 'var(--bg-card)',
-          color: histEntries.length > 0 ? 'var(--warning)' : 'var(--text-muted)',
-          cursor: 'pointer', flexShrink: 0, transition: 'background 150ms, color 150ms',
-        }}
-        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.15)'; e.currentTarget.style.color = 'var(--warning)' }}
-        onMouseLeave={e => {
-          e.currentTarget.style.background = histEntries.length > 0 ? 'rgba(245,158,11,0.08)' : 'var(--bg-card)'
-          e.currentTarget.style.color      = histEntries.length > 0 ? 'var(--warning)' : 'var(--text-muted)'
-        }}
-      >
-        <History size={14} />
-      </button>
-
-      {/* Print */}
-      <button
-        onClick={() => setPrintOpen(true)}
-        title="Cetak"
-        style={{
-          width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
-          borderRadius: 8, border: '1px solid var(--border)',
-          background: 'var(--bg-card)', color: 'var(--text-muted)',
-          cursor: 'pointer', flexShrink: 0, transition: 'background 150ms, color 150ms',
-        }}
-        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(59,130,246,0.10)'; e.currentTarget.style.color = 'var(--accent)' }}
-        onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-card)'; e.currentTarget.style.color = 'var(--text-muted)' }}
-      >
-        <Printer size={14} />
-      </button>
-
-      {/* Export */}
-      <button
-        onClick={() => setExportOpen(true)}
-        title="Export / Backup"
-        style={{
-          width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
-          borderRadius: 8, border: '1px solid var(--border)',
-          background: 'var(--bg-card)', color: 'var(--text-muted)',
-          cursor: 'pointer', flexShrink: 0, transition: 'background 150ms, color 150ms',
-        }}
-        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(16,185,129,0.1)'; e.currentTarget.style.color = 'var(--success)' }}
-        onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-card)'; e.currentTarget.style.color = 'var(--text-muted)' }}
-      >
-        <FileSpreadsheet size={14} />
-      </button>
-
-      {/* Lock */}
-      <button
-        onClick={openLock}
-        title={isGlobalLocked ? 'Buku terkunci — tap untuk buka' : hasPin ? 'Ganti PIN' : 'Set PIN kunci'}
-        style={{
-          width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
-          borderRadius: 8, flexShrink: 0, cursor: 'pointer',
-          border: `1px solid ${isGlobalLocked ? 'rgba(245,158,11,0.4)' : 'var(--border)'}`,
-          background: isGlobalLocked ? 'rgba(245,158,11,0.10)' : 'var(--bg-card)',
-          color: isGlobalLocked ? 'var(--warning)' : hasPin && unlockedSession ? 'var(--success)' : 'var(--text-muted)',
-          transition: 'background 150ms, color 150ms',
-        }}
-        onMouseEnter={e => {
-          e.currentTarget.style.background = isGlobalLocked ? 'rgba(245,158,11,0.18)' : 'rgba(245,158,11,0.10)'
-          e.currentTarget.style.color = 'var(--warning)'
-        }}
-        onMouseLeave={e => {
-          e.currentTarget.style.background = isGlobalLocked ? 'rgba(245,158,11,0.10)' : 'var(--bg-card)'
-          e.currentTarget.style.color = isGlobalLocked ? 'var(--warning)' : hasPin && unlockedSession ? 'var(--success)' : 'var(--text-muted)'
-        }}
-      >
-        {isGlobalLocked ? <Lock size={14} /> : <Unlock size={14} />}
-      </button>
-
-      {/* Tambah */}
-      {!isFiltering && !isGlobalLocked && (
-        <button
-          onClick={() => setAddOpen(true)}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 5,
-            padding: '7px 12px', borderRadius: 8, fontSize: 12, fontWeight: 700,
-            background: 'var(--accent)', color: '#fff', border: 'none',
-            cursor: 'pointer', flexShrink: 0,
-          }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-hover)' }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)' }}
-        >
-          <Plus size={14} />
-          Tambah
-        </button>
-      )}
     </div>
   )
 
-  // ── Loading skeleton ────────────────────────
+  // ── Loading ───────────────────────────────
   if (status === 'loading' || status === 'idle') {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         {subHeader}
-        {viewMode === 'table' ? (
-          <div style={{ flex: 1, overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 400 }}>
-              <thead>
-                <tr style={{ background: 'var(--bg-card)', borderBottom: '2px solid var(--border)' }}>
-                  {activeBook.cols.map(col => (
-                    <th key={col.k} style={{
-                      padding: '10px 12px', textAlign: 'left', fontSize: 11, fontWeight: 700,
-                      color: 'var(--text-muted)', textTransform: 'uppercase',
-                      letterSpacing: '0.05em', width: col.w ? col.w : undefined, whiteSpace: 'nowrap',
-                    }}>
-                      {col.l}
-                    </th>
-                  ))}
-                  <th style={{ width: 36, padding: '10px 8px' }} />
-                </tr>
-              </thead>
-              <tbody>
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <SkeletonRow key={i} colCount={activeBook.cols.length} />
+        <div style={{ flex: 1, overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 400 }}>
+            <thead>
+              <tr style={{ background: 'var(--bg-table-head)', borderBottom: '2px solid var(--border)' }}>
+                {activeBook.cols.map(col => (
+                  <th key={col.k} style={{ padding: '8px 12px', textAlign: 'left', fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', width: col.w ?? undefined }}>{col.l}</th>
                 ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div style={{ flex: 1, overflowY: 'auto', padding: '12px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 10, alignContent: 'start' }}>
-            {Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)}
-          </div>
-        )}
+                <th style={{ width: 36 }} />
+              </tr>
+            </thead>
+            <tbody>{Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} colCount={activeBook.cols.length} />)}</tbody>
+          </table>
+        </div>
       </div>
     )
   }
 
-  // ── Error state ─────────────────────────────
+  // ── Error ─────────────────────────────────
   if (status === 'error') {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         {subHeader}
-        <div style={{
-          flex: 1, display: 'flex', flexDirection: 'column',
-          alignItems: 'center', justifyContent: 'center', gap: 10,
-        }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
           <WifiOff size={32} style={{ color: 'var(--danger)', opacity: 0.6 }} />
-          <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: 0, textAlign: 'center' }}>
-            Gagal memuat data<br />
-            <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{error}</span>
+          <p style={{ fontSize: 14, color: 'var(--text-secondary)', margin: 0, textAlign: 'center' }}>
+            Gagal memuat data<br /><span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{error}</span>
           </p>
-          <button
-            onClick={() => window.location.reload()}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 6,
-              padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600,
-              background: 'var(--accent)', color: '#fff', border: 'none', cursor: 'pointer',
-            }}
-          >
-            <RefreshCw size={13} /> Coba lagi
+          <button onClick={() => window.location.reload()} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 8, fontSize: 13, fontWeight: 600, background: 'var(--accent)', color: '#fff', border: 'none', cursor: 'pointer' }}>
+            <RefreshCw size={14} /> Coba lagi
           </button>
         </div>
       </div>
     )
   }
 
-  // ── Empty state ─────────────────────────────
+  // ── Empty ─────────────────────────────────
   if (rows.length === 0) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         {subHeader}
-        <div style={{
-          flex: 1, display: 'flex', flexDirection: 'column',
-          alignItems: 'center', justifyContent: 'center', gap: 12, padding: 24,
-        }}>
-          <div style={{
-            width: 52, height: 52, borderRadius: 14,
-            background: 'var(--accent-subtle)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, padding: 24 }}>
+          <div style={{ width: 52, height: 52, borderRadius: 14, background: 'var(--accent-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <BookOpen size={24} style={{ color: 'var(--accent)' }} />
           </div>
           <div style={{ textAlign: 'center' }}>
-            <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 4px' }}>
-              Belum ada entri
-            </p>
-            <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: 0 }}>
-              {activeBook.kode} · TA {activeYear}
-            </p>
+            <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 4px' }}>Belum ada entri</p>
+            <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: 0 }}>{activeBook.kode} · TA {activeYear}</p>
           </div>
           {!isGlobalLocked && (
-            <button
-              onClick={() => setAddOpen(true)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 6,
-                padding: '8px 18px', borderRadius: 9, fontSize: 13, fontWeight: 700,
-                background: 'var(--accent)', color: '#fff', border: 'none', cursor: 'pointer',
-              }}
-            >
+            <button onClick={() => setAddOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 20px', borderRadius: 9, fontSize: 14, fontWeight: 700, background: 'var(--accent)', color: '#fff', border: 'none', cursor: 'pointer' }}>
               <Plus size={15} /> Tambah Entri Pertama
             </button>
           )}
         </div>
-        <AddRowModal
-          open={addOpen} cols={activeBook.cols}
-          onClose={() => setAddOpen(false)} onAdd={handleAdd}
-        />
+        <AddRowModal open={addOpen} cols={activeBook.cols} onClose={() => setAddOpen(false)} onAdd={handleAdd} />
       </div>
     )
   }
 
-  // ── No search results ───────────────────────
+  // ── No search results ─────────────────────
   if (isFiltering && filteredRows.length === 0) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         {subHeader}
-        <div style={{
-          flex: 1, display: 'flex', flexDirection: 'column',
-          alignItems: 'center', justifyContent: 'center', gap: 8,
-        }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
           <SearchX size={28} style={{ color: 'var(--text-muted)', opacity: 0.5 }} />
-          <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: 0 }}>
-            Tidak ditemukan untuk &quot;{query}&quot;
-          </p>
+          <p style={{ fontSize: 14, color: 'var(--text-secondary)', margin: 0 }}>Tidak ditemukan untuk &quot;{query}&quot;</p>
         </div>
       </div>
     )
   }
 
-  // ── Main content ────────────────────────────
+  // ── Main content ──────────────────────────
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {subHeader}
@@ -940,18 +712,32 @@ export default function AppPage() {
         <div style={{ flex: 1, overflow: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 360 }}>
             <thead style={{ position: 'sticky', top: 0, zIndex: 2 }}>
-              <tr style={{ background: 'var(--bg-card)', borderBottom: '2px solid var(--border)' }}>
+              {/* Baris 1: label kolom */}
+              <tr style={{ background: 'var(--bg-table-head)', borderBottom: '1px solid var(--border)' }}>
                 {activeBook.cols.map(col => (
                   <th key={col.k} style={{
-                    padding: '10px 12px', textAlign: 'left', fontSize: 11, fontWeight: 700,
+                    padding: '9px 12px 2px', textAlign: 'left', fontSize: 11, fontWeight: 700,
                     color: 'var(--text-muted)', textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
-                    width: col.w ?? undefined, whiteSpace: 'nowrap',
+                    letterSpacing: '0.05em', width: col.w ?? undefined, whiteSpace: 'nowrap',
                   }}>
                     {col.l}
                   </th>
                 ))}
-                <th style={{ width: 60, padding: '10px 8px' }} />
+                <th style={{ width: 64, padding: '9px 8px 2px' }} />
+              </tr>
+              {/* Baris 2: nomor kolom — standar format buku register desa */}
+              <tr style={{ background: 'var(--bg-table-head)', borderBottom: '2px solid var(--border)' }}>
+                {activeBook.cols.map((_, ci) => (
+                  <th key={ci} style={{
+                    padding: '2px 12px 8px', textAlign: 'left',
+                    fontSize: 11, fontWeight: 600,
+                    fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)',
+                    color: 'var(--accent)',
+                  }}>
+                    {ci + 1}
+                  </th>
+                ))}
+                <th style={{ padding: '2px 8px 8px' }} />
               </tr>
             </thead>
             <tbody>
@@ -968,12 +754,8 @@ export default function AppPage() {
                       transition: 'background 100ms',
                       opacity: isGlobalLocked && !rowLocked ? 0.75 : 1,
                     }}
-                    onMouseEnter={e => {
-                      if (!rowLocked) (e.currentTarget as HTMLTableRowElement).style.background = 'var(--bg-card)'
-                    }}
-                    onMouseLeave={e => {
-                      (e.currentTarget as HTMLTableRowElement).style.background = rowLocked ? 'rgba(245,158,11,0.04)' : 'transparent'
-                    }}
+                    onMouseEnter={e => { if (!rowLocked) (e.currentTarget as HTMLTableRowElement).style.background = 'var(--bg-elevated)' }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLTableRowElement).style.background = rowLocked ? 'rgba(245,158,11,0.04)' : 'transparent' }}
                   >
                     {activeBook.cols.map(col => (
                       <EditableCell
@@ -988,47 +770,36 @@ export default function AppPage() {
                         onSave={handleUpdateCell}
                       />
                     ))}
-                    {/* Action column */}
-                    <td style={{ padding: '6px 8px', width: 60, whiteSpace: 'nowrap' }}>
+                    <td style={{ padding: '6px 8px', width: 64, whiteSpace: 'nowrap' }}>
                       <div style={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-                        {/* Row lock toggle */}
                         {!isGlobalLocked && (
                           <button
                             onClick={() => handleToggleRowLock(rowIdx)}
                             title={rowLocked ? 'Buka kunci baris' : 'Kunci baris'}
                             style={{
-                              width: 26, height: 26,
-                              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                              width: 28, height: 28, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                               borderRadius: 6, border: 'none',
                               background: rowLocked ? 'rgba(245,158,11,0.15)' : 'transparent',
                               color: rowLocked ? 'var(--warning)' : 'var(--text-muted)',
-                              cursor: 'pointer', transition: 'background 120ms, color 120ms',
-                            }}
-                            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.15)'; e.currentTarget.style.color = 'var(--warning)' }}
-                            onMouseLeave={e => {
-                              e.currentTarget.style.background = rowLocked ? 'rgba(245,158,11,0.15)' : 'transparent'
-                              e.currentTarget.style.color = rowLocked ? 'var(--warning)' : 'var(--text-muted)'
+                              cursor: 'pointer',
                             }}
                           >
-                            <LockKeyhole size={12} />
+                            <LockKeyhole size={13} />
                           </button>
                         )}
-                        {/* Delete */}
                         {!rowLocked && !isGlobalLocked && (
                           <button
                             onClick={() => setConfirmDelete(row)}
                             title="Hapus baris ini"
                             style={{
-                              width: 26, height: 26,
-                              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                              width: 28, height: 28, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                               borderRadius: 6, border: 'none', background: 'transparent',
                               color: 'var(--text-muted)', cursor: 'pointer',
-                              transition: 'background 120ms, color 120ms',
                             }}
                             onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.15)'; e.currentTarget.style.color = 'var(--danger)' }}
                             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)' }}
                           >
-                            <Trash2 size={12} />
+                            <Trash2 size={13} />
                           </button>
                         )}
                       </div>
@@ -1041,20 +812,15 @@ export default function AppPage() {
 
           {/* Footer */}
           <div style={{
-            padding: '10px 14px', fontSize: 11, color: 'var(--text-muted)',
+            padding: '10px 14px', fontSize: 12, color: 'var(--text-muted)',
             borderTop: '1px solid var(--border)',
             fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           }}>
-            <span>
-              {isFiltering
-                ? `${filteredRows.length} dari ${totalRows} baris`
-                : `${totalRows} baris`
-              } · {activeBook.kode} · TA {activeYear}
-            </span>
+            <span>{isFiltering ? `${filteredRows.length} dari ${totalRows} baris` : `${totalRows} baris`} · {activeBook.kode} · TA {activeYear}</span>
             {onlineUsers.length > 0 && (
               <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', display: 'inline-block' }} />
+                <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#10B981', display: 'inline-block' }} />
                 {onlineUsers.length} online
               </span>
             )}
@@ -1065,25 +831,14 @@ export default function AppPage() {
       {/* ── CARD VIEW ── */}
       {viewMode === 'card' && (
         <div style={{ flex: 1, overflowY: 'auto' }}>
-          <div style={{
-            padding: '12px',
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-            gap: 10,
-          }}>
+          <div style={{ padding: '12px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 10 }}>
             {displayRows.map((row, rowIdx) => {
               const rowLocked = isRowLocked(activeBook.id, rowIdx)
               const isMatch   = isFiltering && filteredResults.some(r => r.row._id === row._id)
-
               return (
                 <EntryCard
-                  key={row._id}
-                  row={row}
-                  rowIdx={rowIdx}
-                  cols={activeBook.cols}
-                  isLocked={rowLocked}
-                  globalLocked={isGlobalLocked}
-                  isMatch={isMatch}
+                  key={row._id} row={row} rowIdx={rowIdx} cols={activeBook.cols}
+                  isLocked={rowLocked} globalLocked={isGlobalLocked} isMatch={isMatch}
                   highlightText={highlightText}
                   onEdit={r => setCardEditRow(r)}
                   onDelete={r => setConfirmDelete(r)}
@@ -1092,23 +847,11 @@ export default function AppPage() {
               )
             })}
           </div>
-
-          {/* Card footer */}
-          <div style={{
-            padding: '10px 14px', fontSize: 11, color: 'var(--text-muted)',
-            borderTop: '1px solid var(--border)',
-            fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)',
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          }}>
-            <span>
-              {isFiltering
-                ? `${filteredRows.length} dari ${totalRows} baris`
-                : `${totalRows} baris`
-              } · {activeBook.kode} · TA {activeYear}
-            </span>
+          <div style={{ padding: '10px 14px', fontSize: 12, color: 'var(--text-muted)', borderTop: '1px solid var(--border)', fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span>{isFiltering ? `${filteredRows.length} dari ${totalRows} baris` : `${totalRows} baris`} · {activeBook.kode} · TA {activeYear}</span>
             {onlineUsers.length > 0 && (
               <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', display: 'inline-block' }} />
+                <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#10B981', display: 'inline-block' }} />
                 {onlineUsers.length} online
               </span>
             )}
@@ -1117,54 +860,21 @@ export default function AppPage() {
       )}
 
       {/* ── Modals ── */}
-      <AddRowModal
-        open={addOpen} cols={activeBook.cols}
-        onClose={() => setAddOpen(false)} onAdd={handleAdd}
-      />
+      <AddRowModal open={addOpen} cols={activeBook.cols} onClose={() => setAddOpen(false)} onAdd={handleAdd} />
       <ConfirmDialog
-        open={!!confirmDelete}
-        title="Hapus Baris"
+        open={!!confirmDelete} title="Hapus Baris"
         message={`Yakin ingin menghapus baris No. ${confirmDelete?.no}? Data yang dihapus tidak bisa dikembalikan.`}
-        confirmLabel="Hapus"
-        onConfirm={handleDeleteConfirm}
-        onCancel={() => setConfirmDelete(null)}
-        loading={deleting}
+        confirmLabel="Hapus" onConfirm={handleDeleteConfirm} onCancel={() => setConfirmDelete(null)} loading={deleting}
       />
-      <ExportModal
-        open={exportOpen} book={activeBook} rows={rows}
-        year={activeYear} onClose={() => setExportOpen(false)}
-      />
-      <PrintModal
-        open={printOpen} book={activeBook} rows={rows}
-        filtered={filteredRows} year={activeYear}
-        isFiltering={isFiltering} onClose={() => setPrintOpen(false)}
-      />
-      <HistoryDrawer
-        open={histOpen}
-        entries={histEntries}
-        status={histStatus}
-        bookName={`${activeBook.kode} — ${activeBook.judul}`}
-        onClose={() => setHistOpen(false)}
-      />
-      <LockModal
-        open={lockOpen}
-        mode={lockMode}
-        hasMasterHash={hasMasterHash}
-        onClose={() => setLockOpen(false)}
-        onSetPin={setPin}
-        onUnlock={unlock}
-        onVerifyMaster={verifyMaster}
-        onSetMaster={setMasterHash}
-      />
-      {/* Card Edit Modal — Session 11 */}
+      <ExportModal open={exportOpen} book={activeBook} rows={rows} year={activeYear} onClose={() => setExportOpen(false)} />
+      <PrintModal open={printOpen} book={activeBook} rows={rows} filtered={filteredRows} year={activeYear} isFiltering={isFiltering} onClose={() => setPrintOpen(false)} />
+      <HistoryDrawer open={histOpen} entries={histEntries} status={histStatus} bookName={`${activeBook.kode} — ${activeBook.judul}`} onClose={() => setHistOpen(false)} />
+      <LockModal open={lockOpen} mode={lockMode} hasMasterHash={hasMasterHash} onClose={() => setLockOpen(false)} onSetPin={setPin} onUnlock={unlock} onVerifyMaster={verifyMaster} onSetMaster={setMasterHash} />
       {cardEditRow && (
         <CardEditModal
-          open={!!cardEditRow}
-          row={cardEditRow}
-          cols={activeBook.cols}
+          open={!!cardEditRow} row={cardEditRow} cols={activeBook.cols}
           locked={isRowLocked(activeBook.id, rows.findIndex(r => r._id === cardEditRow._id))}
-          onClose={() => setCardEditRow(null)}
-          onSave={handleUpdateCell}
+          onClose={() => setCardEditRow(null)} onSave={handleUpdateCell}
         />
       )}
     </div>

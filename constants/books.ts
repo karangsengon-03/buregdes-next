@@ -64,7 +64,9 @@ export const BOOKS: BookDef[] = [
       { k: 'no',     l: 'No',      w: 40,  ro: true },
       { k: 'nomor',  l: 'Nomor',   type: 'mono' },
       { k: 'tanggal',l: 'Tanggal', type: 'date' },
+      { k: 'dari',   l: 'Dari' },
       { k: 'uraian', l: 'Uraian' },
+      { k: 'ket',    l: 'Ket.' },
     ],
   },
   {
@@ -75,7 +77,9 @@ export const BOOKS: BookDef[] = [
       { k: 'no',     l: 'No',      w: 40,  ro: true },
       { k: 'nomor',  l: 'Nomor',   type: 'mono' },
       { k: 'tanggal',l: 'Tanggal', type: 'date' },
+      { k: 'kepada', l: 'Kepada' },
       { k: 'uraian', l: 'Uraian' },
+      { k: 'ket',    l: 'Ket.' },
     ],
   },
 ]

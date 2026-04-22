@@ -15,6 +15,11 @@ export interface BookColumn {
 // Alias — useSearch menggunakan ColDef
 export type ColDef = BookColumn
 
+export interface ColGroup {
+  label: string
+  span:  number
+}
+
 export interface BookDef {
   id:        string        // 'A1'–'A6' — dipakai untuk RTDB path (tanpa titik)
   kode:      string        // 'A.1'–'A.6' — dipakai untuk display
@@ -22,6 +27,7 @@ export interface BookDef {
   shortName?: string
   group?:    string
   cols:      BookColumn[]
+  colGroups?: ColGroup[]    // opsional — grup header tabel
 }
 
 export interface BookRow {
