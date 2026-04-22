@@ -302,7 +302,7 @@ export default function SettingsPage() {
           Pengaturan
         </h1>
         <p style={{ margin: '4px 0 0', fontSize: 12, color: 'var(--text-muted)' }}>
-          Konfigurasi aplikasi BuRegDes
+          Konfigurasi aplikasi BuRegDes Next
         </p>
       </div>
 
