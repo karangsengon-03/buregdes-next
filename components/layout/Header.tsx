@@ -3,6 +3,7 @@
 // Baris 1: Hamburger | BUKU REGISTER / Desa Karang Sengon [/ Kec. Kab.] | Presence · Tema · Cari
 
 import { useCallback, useState, useEffect, useRef } from 'react'
+import { usePathname } from 'next/navigation'
 import { Menu, Sun, Moon, Search, X } from 'lucide-react'
 import { useApp }       from '@/contexts/AppContext'
 import { useDesaInfo }  from '@/hooks/useDesaInfo'
@@ -25,6 +26,8 @@ function initials(name: string) {
 
 export function Header({ onMenuClick }: HeaderProps) {
   const { activeBook, activeYear } = useApp()
+  const pathname   = usePathname()
+  const isSettings = pathname === '/app/settings'
   const { desaInfo }  = useDesaInfo()
   const { onlineUsers, myUid } = usePresence()
 
@@ -52,7 +55,7 @@ export function Header({ onMenuClick }: HeaderProps) {
   }, [searchOpen])
 
   // Nama desa dari RTDB, fallback default
-  const namaDesa    = desaInfo.desa      || 'Desa Karang Sengon'
+  const namaDesa    = desaInfo.desa ? (desaInfo.desa.toLowerCase().startsWith('desa ') ? desaInfo.desa : `Desa ${desaInfo.desa}`) : 'Desa Karang Sengon'
   const kecamatan   = desaInfo.kecamatan || 'Klabang'
   const kabupaten   = desaInfo.kabupaten || 'Bondowoso'
 
@@ -228,6 +231,7 @@ export function Header({ onMenuClick }: HeaderProps) {
       <SubBar
         activeBook={activeBook}
         activeYear={activeYear}
+        isSettings={isSettings}
         searchOpen={searchOpen}
         searchRef={searchRef}
         query={query}
@@ -243,9 +247,10 @@ export function Header({ onMenuClick }: HeaderProps) {
 }
 
 // SubBar terpisah agar mudah dikelola
-function SubBar({ activeBook, activeYear, searchOpen, searchRef, query, setQuery, clearQuery, isFiltering, filteredCount, totalCount, onCloseSearch }: {
+function SubBar({ activeBook, activeYear, isSettings, searchOpen, searchRef, query, setQuery, clearQuery, isFiltering, filteredCount, totalCount, onCloseSearch }: {
   activeBook: { kode: string; judul: string }
   activeYear: string
+  isSettings: boolean
   searchOpen: boolean
   searchRef: React.RefObject<HTMLInputElement | null>
   query: string
@@ -263,16 +268,18 @@ function SubBar({ activeBook, activeYear, searchOpen, searchRef, query, setQuery
       borderTop: '1px solid var(--border)',
       background: 'var(--bg-app)', gap: 8,
     }}>
-      {/* Kode buku badge */}
-      <span style={{
-        fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)',
-        fontSize: 10, fontWeight: 700,
-        padding: '2px 6px', borderRadius: 4,
-        background: 'var(--accent-subtle)', color: 'var(--text-accent)',
-        flexShrink: 0, letterSpacing: '0.02em',
-      }}>
-        {activeBook.kode}
-      </span>
+      {/* Kode buku badge — sembunyikan di halaman Pengaturan */}
+      {!isSettings && (
+        <span style={{
+          fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)',
+          fontSize: 10, fontWeight: 700,
+          padding: '2px 6px', borderRadius: 4,
+          background: 'var(--accent-subtle)', color: 'var(--text-accent)',
+          flexShrink: 0, letterSpacing: '0.02em',
+        }}>
+          {activeBook.kode}
+        </span>
+      )}
 
       {/* Nama buku atau search input */}
       {searchOpen ? (
@@ -304,17 +311,19 @@ function SubBar({ activeBook, activeYear, searchOpen, searchRef, query, setQuery
           color: 'var(--text-secondary)',
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>
-          {activeBook.judul}
+          {isSettings ? 'Pengaturan' : activeBook.judul}
         </p>
       )}
 
-      {/* TA badge */}
-      <span style={{
-        fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)',
-        fontSize: 10, color: 'var(--text-muted)', flexShrink: 0,
-      }}>
-        TA {activeYear}
-      </span>
+      {/* TA badge — sembunyikan di halaman Pengaturan */}
+      {!isSettings && (
+        <span style={{
+          fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)',
+          fontSize: 10, color: 'var(--text-muted)', flexShrink: 0,
+        }}>
+          TA {activeYear}
+        </span>
+      )}
     </div>
   )
 }

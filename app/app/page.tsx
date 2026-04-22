@@ -21,7 +21,6 @@ import { useBookData }       from '@/hooks/useBookData'
 import { useSearch }         from '@/hooks/useSearch'
 import { useHistory }        from '@/hooks/useHistory'
 import { useLock }           from '@/hooks/useLock'
-import { AddRowModal }       from '@/components/ui/AddRowModal'
 import { ConfirmDialog }     from '@/components/ui/ConfirmDialog'
 import { ExportModal }       from '@/components/ui/ExportModal'
 import { PrintModal }        from '@/components/ui/PrintModal'
@@ -503,7 +502,6 @@ export default function AppPage() {
   })
   const handleSetViewMode = (mode: ViewMode) => { setViewMode(mode); localStorage.setItem('brViewMode', mode) }
 
-  const [addOpen,       setAddOpen]       = useState(false)
   const [confirmDelete, setConfirmDelete] = useState<BookRow | null>(null)
   const [deleting,      setDeleting]      = useState(false)
   const [exportOpen,    setExportOpen]    = useState(false)
@@ -526,10 +524,17 @@ export default function AppPage() {
     catch { showToast({ message: 'Gagal mengubah kunci baris', variant: 'error' }) }
   }, [toggleRowLock, activeBook.id, activeYear, showToast])
 
-  const handleAdd = useCallback(async (data: Record<string, string | number>) => {
-    try { await addRow(data); showToast({ message: 'Baris berhasil ditambahkan', variant: 'success' }) }
-    catch { showToast({ message: 'Gagal menambah baris', variant: 'error' }); throw new Error('add failed') }
-  }, [addRow, showToast])
+
+  // Tambah baris kosong langsung tanpa form
+  const handleAddEmptyRow = useCallback(async () => {
+    if (isGlobalLocked) return
+    try {
+      await addRow({})
+      showToast({ message: 'Baris baru ditambahkan', variant: 'success', duration: 1200 })
+    } catch {
+      showToast({ message: 'Gagal menambah baris', variant: 'error' })
+    }
+  }, [addRow, isGlobalLocked, showToast])
 
   const handleUpdateCell = useCallback(async (rowId: string, field: string, value: string | number) => {
     const ri    = rows.findIndex(r => r._id === rowId)
@@ -589,9 +594,11 @@ export default function AppPage() {
 
         <div style={{ width: 1, height: 24, background: 'var(--border)', flexShrink: 0, margin: '0 2px' }} />
 
-        <ActionBtn onClick={openLock} title={isGlobalLocked ? 'Buku terkunci — tap untuk buka' : hasPin ? 'Ganti PIN' : 'Set PIN Kunci'} active={isGlobalLocked} activeColor="var(--warning)" activeBg="rgba(245,158,11,0.10)" activeBorder="rgba(245,158,11,0.4)">
-          {isGlobalLocked ? <Lock size={16} /> : <Unlock size={16} />}
-        </ActionBtn>
+        {!['A5','A6'].includes(activeBook.id) && (
+          <ActionBtn onClick={openLock} title={isGlobalLocked ? 'Buku terkunci — tap untuk buka' : hasPin ? 'Ganti PIN' : 'Set PIN Kunci'} active={isGlobalLocked} activeColor="var(--warning)" activeBg="rgba(245,158,11,0.10)" activeBorder="rgba(245,158,11,0.4)">
+            {isGlobalLocked ? <Lock size={16} /> : <Unlock size={16} />}
+          </ActionBtn>
+        )}
 
         {isFiltering && (
           <span style={{ fontSize: 11, color: 'var(--text-muted)', marginLeft: 4 }}>
@@ -656,19 +663,12 @@ export default function AppPage() {
             <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: 0 }}>{activeBook.kode} · TA {activeYear}</p>
           </div>
           {!isGlobalLocked && (
-            <button onClick={() => setAddOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 20px', borderRadius: 9, fontSize: 14, fontWeight: 700, background: 'var(--accent)', color: '#fff', border: 'none', cursor: 'pointer' }}>
-              <Plus size={15} /> Tambah Entri Pertama
+            <button onClick={handleAddEmptyRow} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 20px', borderRadius: 9, fontSize: 14, fontWeight: 700, background: 'var(--accent)', color: '#fff', border: 'none', cursor: 'pointer' }}>
+              <Plus size={15} /> Tambah Baris Pertama
             </button>
           )}
         </div>
-        <AddRowModal open={addOpen} cols={activeBook.cols} onClose={() => setAddOpen(false)} onAdd={handleAdd} />
-        {/* FAB di empty state */}
-        {!isGlobalLocked && (
-          <button onClick={() => setAddOpen(true)} title="Tambah baris baru"
-            style={{ position: 'fixed', right: 16, bottom: 'calc(16px + env(safe-area-inset-bottom))', width: 52, height: 52, borderRadius: '50%', background: 'var(--accent)', color: '#fff', border: 'none', boxShadow: '0 4px 20px rgba(59,130,246,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 20 }}>
-            <Plus size={24} />
-          </button>
-        )}
+
       </div>
     )
   }
@@ -707,7 +707,7 @@ export default function AppPage() {
                     {col.l}
                   </th>
                 ))}
-                <th style={{ width: 96, padding: '9px 8px 2px', position: 'sticky', right: 0, background: 'var(--bg-table-head)', zIndex: 1 }} />
+                <th style={{ width: 96, padding: '9px 8px 2px' }} />
               </tr>
               {/* Baris 2: nomor kolom — standar format buku register desa */}
               <tr style={{ background: 'var(--bg-table-head)', borderBottom: '2px solid var(--border)' }}>
@@ -722,7 +722,7 @@ export default function AppPage() {
                     {ci + 1}
                   </th>
                 ))}
-                <th style={{ padding: '2px 8px 8px', position: 'sticky', right: 0, background: 'var(--bg-table-head)', zIndex: 1 }} />
+                <th style={{ padding: '2px 8px 8px' }} />
               </tr>
             </thead>
             <tbody>
@@ -757,8 +757,6 @@ export default function AppPage() {
                     ))}
                     <td style={{
                       padding: '4px 6px', width: 96, whiteSpace: 'nowrap',
-                      position: 'sticky', right: 0, zIndex: 1,
-                      background: rowLocked ? 'rgba(245,158,11,0.04)' : 'var(--bg-app)',
                       borderLeft: '1px solid var(--border)',
                     }}>
                       <div style={{ display: 'flex', gap: 2, justifyContent: 'center', alignItems: 'center' }}>
@@ -816,6 +814,30 @@ export default function AppPage() {
                 )
               })}
             </tbody>
+            {/* Baris Tambah — di bawah data terakhir */}
+            {!isFiltering && !isGlobalLocked && (
+              <tbody>
+                <tr
+                  onClick={handleAddEmptyRow}
+                  style={{ cursor: 'pointer', borderTop: '1px dashed var(--border)' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLTableRowElement).style.background = 'rgba(59,130,246,0.06)' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLTableRowElement).style.background = 'transparent' }}
+                >
+                  <td
+                    colSpan={activeBook.cols.length + 1}
+                    style={{
+                      padding: '10px 14px', fontSize: 13, fontWeight: 600,
+                      color: 'var(--accent)',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <Plus size={14} />
+                      Tambah baris
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            )}
           </table>
 
 
@@ -845,35 +867,7 @@ export default function AppPage() {
         </div>
       )}
 
-      {/* ── FAB Tambah ── */}
-      {!isFiltering && !isGlobalLocked && (
-        <button
-          onClick={() => setAddOpen(true)}
-          title="Tambah baris baru"
-          style={{
-            position: 'fixed',
-            right: 16,
-            bottom: 'calc(16px + env(safe-area-inset-bottom))',
-            width: 52, height: 52,
-            borderRadius: '50%',
-            background: 'var(--accent)',
-            color: '#fff',
-            border: 'none',
-            boxShadow: '0 4px 20px rgba(59,130,246,0.5)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer',
-            zIndex: 20,
-            transition: 'transform 150ms, box-shadow 150ms',
-          }}
-          onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.08)'; e.currentTarget.style.boxShadow = '0 6px 24px rgba(59,130,246,0.65)' }}
-          onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(59,130,246,0.5)' }}
-        >
-          <Plus size={24} />
-        </button>
-      )}
-
       {/* ── Modals ── */}
-      <AddRowModal open={addOpen} cols={activeBook.cols} onClose={() => setAddOpen(false)} onAdd={handleAdd} />
       <ConfirmDialog
         open={!!confirmDelete} title="Hapus Baris"
         message={`Yakin ingin menghapus baris No. ${confirmDelete?.no}? Data yang dihapus tidak bisa dikembalikan.`}
