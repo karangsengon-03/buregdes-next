@@ -496,6 +496,11 @@ export default function AppPage() {
   const { entries: histEntries, status: histStatus, logEdit } = useHistory(activeBook.id)
   const { isGlobalLocked, hasPin, hasMasterHash, unlockedSession, setPin, unlock, lock, toggleRowLock, isRowLocked, verifyMaster, setMasterHash } = useLock(activeYear)
 
+  // Poin 1 & 3: tombol tambah baris tidak pernah dipengaruhi global lock
+  // A5/A6 tidak punya global lock → selalu true
+  // A1-A4: per Poin 3 (Opsi A), tambah baris bebas dari global lock juga
+  const canAdd = true
+
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
     if (typeof window !== 'undefined') return (localStorage.getItem('brViewMode') as ViewMode) ?? 'table'
     return 'table'
@@ -527,14 +532,13 @@ export default function AppPage() {
 
   // Tambah baris kosong langsung tanpa form
   const handleAddEmptyRow = useCallback(async () => {
-    if (isGlobalLocked) return
     try {
       await addRow({})
       showToast({ message: 'Baris baru ditambahkan', variant: 'success', duration: 1200 })
     } catch {
       showToast({ message: 'Gagal menambah baris', variant: 'error' })
     }
-  }, [addRow, isGlobalLocked, showToast])
+  }, [addRow, showToast])
 
   const handleUpdateCell = useCallback(async (rowId: string, field: string, value: string | number) => {
     const ri    = rows.findIndex(r => r._id === rowId)
@@ -665,7 +669,7 @@ export default function AppPage() {
             <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 4px' }}>Belum ada entri</p>
             <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: 0 }}>{activeBook.kode} · TA {activeYear}</p>
           </div>
-          {!isGlobalLocked && (
+          {canAdd && (
             <button onClick={handleAddEmptyRow} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 20px', borderRadius: 9, fontSize: 14, fontWeight: 700, background: 'var(--accent)', color: '#fff', border: 'none', cursor: 'pointer' }}>
               <Plus size={15} /> Tambah Baris Pertama
             </button>
@@ -818,7 +822,7 @@ export default function AppPage() {
               })}
             </tbody>
             {/* Baris Tambah — di bawah data terakhir */}
-            {!isFiltering && !isGlobalLocked && (
+            {!isFiltering && canAdd && (
               <tbody>
                 <tr
                   onClick={handleAddEmptyRow}

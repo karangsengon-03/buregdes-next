@@ -84,5 +84,12 @@ export const BOOKS: BookDef[] = [
   },
 ]
 
-export const YEARS = ['2023', '2024', '2025', '2026', '2027']
-export const DEFAULT_YEAR = '2026'
+const _currentYear = new Date().getFullYear()
+const _startYear   = 2021
+const _endYear     = _currentYear + 2
+
+export const YEARS: string[] = Array.from(
+  { length: _endYear - _startYear + 1 },
+  (_, i) => String(_startYear + i),
+)
+export const DEFAULT_YEAR = String(_currentYear)

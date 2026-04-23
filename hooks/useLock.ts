@@ -2,7 +2,7 @@
 // BuRegDes Next — useLock (Session 18 — Fixed)
 //
 // Fix: lock() sekarang simpan ke RTDB agar persisten lintas sesi
-// Fix: unlockedSession persisten via sessionStorage (survive page refresh dalam tab sama)
+// Fix: unlockedSession persisten via localStorage (survive tutup/buka apps)
 
 import { useState, useEffect, useCallback } from 'react'
 import { db } from '@/lib/firebase'
@@ -47,17 +47,19 @@ export function useLock(activeYear: string): UseLockReturn {
   const [lockedRows,     setLockedRows]     = useState<LockedRows>({})
   const [masterHash,     setMasterHashState] = useState<number | null>(null)
 
-  // unlockedSession: baca dari sessionStorage agar survive refresh dalam tab yang sama
+  // unlockedSession: baca dari localStorage agar survive tutup/buka apps
+  // Jika sesi terakhir unlock → buka apps lagi = tidak terkunci
+  // Jika sesi terakhir lock   → buka apps lagi = terkunci
   const [unlockedSession, setUnlockedSessionState] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false
-    return sessionStorage.getItem(SESSION_KEY) === '1'
+    return localStorage.getItem(SESSION_KEY) === '1'
   })
 
   const setUnlockedSession = (v: boolean) => {
     setUnlockedSessionState(v)
     if (typeof window !== 'undefined') {
-      if (v) sessionStorage.setItem(SESSION_KEY, '1')
-      else   sessionStorage.removeItem(SESSION_KEY)
+      if (v) localStorage.setItem(SESSION_KEY, '1')
+      else   localStorage.removeItem(SESSION_KEY)
     }
   }
 
