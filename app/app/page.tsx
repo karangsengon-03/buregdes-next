@@ -707,45 +707,31 @@ export default function AppPage() {
         <div style={{ flex: 1, overflow: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 360 }}>
             <thead>
-              {/* Baris 1: label kolom */}
+              {/* Satu baris header: label atas, nomor bawah — sticky sebagai satu unit */}
               <tr>
-                {activeBook.cols.map(col => (
+                {activeBook.cols.map((col, ci) => (
                   <th key={col.k} style={{
                     position: 'sticky', top: 0, zIndex: 3,
                     background: 'var(--bg-table-head)',
-                    padding: '6px 12px 1px', textAlign: 'left', fontSize: 11, fontWeight: 700,
-                    color: 'var(--text-muted)', textTransform: 'uppercase',
-                    letterSpacing: '0.05em', width: col.w ?? undefined, whiteSpace: 'nowrap',
+                    padding: '6px 12px 4px',
+                    textAlign: 'left',
+                    width: col.w ?? undefined,
+                    whiteSpace: 'nowrap',
+                    borderRight: '1px solid rgba(255,255,255,0.08)',
+                    borderBottom: '2px solid var(--border)',
                   }}>
-                    {col.l}
+                    <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: 1 }}>
+                      {col.l}
+                    </div>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--accent)', fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)', lineHeight: 1, marginTop: 3 }}>
+                      {ci + 1}
+                    </div>
                   </th>
                 ))}
                 <th style={{
                   position: 'sticky', top: 0, zIndex: 3,
                   background: 'var(--bg-table-head)',
-                  width: 96, padding: '6px 8px 1px',
-                }} />
-              </tr>
-              {/* Baris 2: nomor kolom — standar format buku register desa */}
-              <tr>
-                {activeBook.cols.map((_, ci) => (
-                  <th key={ci} style={{
-                    position: 'sticky', top: 24, zIndex: 3,
-                    background: 'var(--bg-table-head)',
-                    padding: '1px 12px 5px', textAlign: 'left',
-                    fontSize: 11, fontWeight: 600,
-                    fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)',
-                    color: 'var(--accent)',
-                    borderRight: '1px solid rgba(255,255,255,0.08)',
-                    borderBottom: '2px solid var(--border)',
-                  }}>
-                    {ci + 1}
-                  </th>
-                ))}
-                <th style={{
-                  position: 'sticky', top: 24, zIndex: 3,
-                  background: 'var(--bg-table-head)',
-                  padding: '1px 8px 5px',
+                  width: 96, padding: '6px 8px 4px',
                   borderBottom: '2px solid var(--border)',
                 }} />
               </tr>
