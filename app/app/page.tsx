@@ -713,10 +713,9 @@ export default function AppPage() {
                   <th key={col.k} style={{
                     position: 'sticky', top: 0, zIndex: 3,
                     background: 'var(--bg-table-head)',
-                    padding: '9px 12px 2px', textAlign: 'left', fontSize: 11, fontWeight: 700,
+                    padding: '6px 12px 1px', textAlign: 'left', fontSize: 11, fontWeight: 700,
                     color: 'var(--text-muted)', textTransform: 'uppercase',
                     letterSpacing: '0.05em', width: col.w ?? undefined, whiteSpace: 'nowrap',
-                    borderBottom: '1px solid var(--border)',
                   }}>
                     {col.l}
                   </th>
@@ -724,17 +723,16 @@ export default function AppPage() {
                 <th style={{
                   position: 'sticky', top: 0, zIndex: 3,
                   background: 'var(--bg-table-head)',
-                  width: 96, padding: '9px 8px 2px',
-                  borderBottom: '1px solid var(--border)',
+                  width: 96, padding: '6px 8px 1px',
                 }} />
               </tr>
               {/* Baris 2: nomor kolom — standar format buku register desa */}
               <tr>
                 {activeBook.cols.map((_, ci) => (
                   <th key={ci} style={{
-                    position: 'sticky', top: 38, zIndex: 3,
+                    position: 'sticky', top: 24, zIndex: 3,
                     background: 'var(--bg-table-head)',
-                    padding: '2px 12px 8px', textAlign: 'left',
+                    padding: '1px 12px 5px', textAlign: 'left',
                     fontSize: 11, fontWeight: 600,
                     fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)',
                     color: 'var(--accent)',
@@ -745,9 +743,9 @@ export default function AppPage() {
                   </th>
                 ))}
                 <th style={{
-                  position: 'sticky', top: 38, zIndex: 3,
+                  position: 'sticky', top: 24, zIndex: 3,
                   background: 'var(--bg-table-head)',
-                  padding: '2px 8px 8px',
+                  padding: '1px 8px 5px',
                   borderBottom: '2px solid var(--border)',
                 }} />
               </tr>
