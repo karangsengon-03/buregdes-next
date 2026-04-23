@@ -714,16 +714,16 @@ export default function AppPage() {
                     position: 'sticky', top: 0, zIndex: 3,
                     background: 'var(--bg-table-head)',
                     padding: '6px 12px 4px',
-                    textAlign: 'left',
+                    textAlign: 'center',
                     width: col.w ?? undefined,
                     whiteSpace: 'nowrap',
                     borderRight: '1px solid rgba(255,255,255,0.08)',
                     borderBottom: '2px solid var(--border)',
                   }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: 1 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: 1, textAlign: 'center' }}>
                       {col.l}
                     </div>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--accent)', fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)', lineHeight: 1, marginTop: 3 }}>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--accent)', fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)', lineHeight: 1, marginTop: 3, textAlign: 'center' }}>
                       {ci + 1}
                     </div>
                   </th>
