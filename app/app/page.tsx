@@ -501,6 +501,10 @@ export default function AppPage() {
   // A1-A4: per Poin 3 (Opsi A), tambah baris bebas dari global lock juga
   const canAdd = true
 
+  // isBookLocked: true hanya jika buku ini A1-A4 DAN global lock aktif
+  // A5/A6 tidak punya global lock → selalu false
+  const isBookLocked = ['A1','A2','A3','A4'].includes(activeBook.id) && isGlobalLocked
+
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
     if (typeof window !== 'undefined') return (localStorage.getItem('brViewMode') as ViewMode) ?? 'table'
     return 'table'
@@ -702,34 +706,50 @@ export default function AppPage() {
       {viewMode === 'table' && (
         <div style={{ flex: 1, overflow: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 360 }}>
-            <thead style={{ position: 'sticky', top: 0, zIndex: 2 }}>
+            <thead>
               {/* Baris 1: label kolom */}
-              <tr style={{ background: 'var(--bg-table-head)', borderBottom: '1px solid var(--border)' }}>
+              <tr>
                 {activeBook.cols.map(col => (
                   <th key={col.k} style={{
+                    position: 'sticky', top: 0, zIndex: 3,
+                    background: 'var(--bg-table-head)',
                     padding: '9px 12px 2px', textAlign: 'left', fontSize: 11, fontWeight: 700,
                     color: 'var(--text-muted)', textTransform: 'uppercase',
                     letterSpacing: '0.05em', width: col.w ?? undefined, whiteSpace: 'nowrap',
+                    borderBottom: '1px solid var(--border)',
                   }}>
                     {col.l}
                   </th>
                 ))}
-                <th style={{ width: 96, padding: '9px 8px 2px' }} />
+                <th style={{
+                  position: 'sticky', top: 0, zIndex: 3,
+                  background: 'var(--bg-table-head)',
+                  width: 96, padding: '9px 8px 2px',
+                  borderBottom: '1px solid var(--border)',
+                }} />
               </tr>
               {/* Baris 2: nomor kolom — standar format buku register desa */}
-              <tr style={{ background: 'var(--bg-table-head)', borderBottom: '2px solid var(--border)' }}>
+              <tr>
                 {activeBook.cols.map((_, ci) => (
                   <th key={ci} style={{
+                    position: 'sticky', top: 38, zIndex: 3,
+                    background: 'var(--bg-table-head)',
                     padding: '2px 12px 8px', textAlign: 'left',
                     fontSize: 11, fontWeight: 600,
                     fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)',
                     color: 'var(--accent)',
                     borderRight: '1px solid rgba(255,255,255,0.08)',
+                    borderBottom: '2px solid var(--border)',
                   }}>
                     {ci + 1}
                   </th>
                 ))}
-                <th style={{ padding: '2px 8px 8px' }} />
+                <th style={{
+                  position: 'sticky', top: 38, zIndex: 3,
+                  background: 'var(--bg-table-head)',
+                  padding: '2px 8px 8px',
+                  borderBottom: '2px solid var(--border)',
+                }} />
               </tr>
             </thead>
             <tbody>
@@ -744,7 +764,7 @@ export default function AppPage() {
                       borderBottom: '1px solid var(--border)',
                       background: rowLocked ? 'rgba(245,158,11,0.04)' : 'transparent',
                       transition: 'background 100ms',
-                      opacity: isGlobalLocked && !rowLocked ? 0.75 : 1,
+                      opacity: isBookLocked && !rowLocked ? 0.75 : 1,
                     }}
                     onMouseEnter={e => { if (!rowLocked) (e.currentTarget as HTMLTableRowElement).style.background = 'var(--bg-elevated)' }}
                     onMouseLeave={e => { (e.currentTarget as HTMLTableRowElement).style.background = rowLocked ? 'rgba(245,158,11,0.04)' : 'transparent' }}
@@ -756,7 +776,7 @@ export default function AppPage() {
                         colKey={col.k}
                         colType={col.type}
                         rowId={row._id ?? ''}
-                        readOnly={col.ro || rowLocked || isGlobalLocked}
+                        readOnly={col.ro || rowLocked || isBookLocked}
                         isMatch={isMatch}
                         highlightText={highlightText}
                         onSave={handleUpdateCell}
@@ -782,7 +802,7 @@ export default function AppPage() {
                           <History size={13} />
                         </button>
                         {/* Lock per baris */}
-                        {!isGlobalLocked && (
+                        {!isBookLocked && (
                           <button
                             onClick={() => handleToggleRowLock(rowIdx)}
                             title={rowLocked ? 'Buka kunci baris' : 'Kunci baris'}
@@ -800,7 +820,7 @@ export default function AppPage() {
                           </button>
                         )}
                         {/* Hapus baris */}
-                        {!rowLocked && !isGlobalLocked && (
+                        {!rowLocked && !isBookLocked && (
                           <button
                             onClick={() => setConfirmDelete(row)}
                             title="Hapus baris ini"
@@ -861,7 +881,7 @@ export default function AppPage() {
               return (
                 <EntryCard
                   key={row._id} row={row} rowIdx={rowIdx} cols={activeBook.cols}
-                  isLocked={rowLocked} globalLocked={isGlobalLocked} isMatch={isMatch}
+                  isLocked={rowLocked} globalLocked={isBookLocked} isMatch={isMatch}
                   highlightText={highlightText}
                   onEdit={r => setCardEditRow(r)}
                   onDelete={r => setConfirmDelete(r)}
