@@ -12,7 +12,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
 import {
   Plus, Trash2, BookOpen, WifiOff, RefreshCw,
-  FileSpreadsheet, SearchX, Printer, History,
+  SearchX, History,
   Lock, Unlock, LockKeyhole, LayoutList, LayoutGrid,
   Pencil, ChevronDown, ChevronUp,
 } from 'lucide-react'
@@ -56,7 +56,7 @@ function ActionBtn({
       onClick={onClick}
       title={title}
       style={{
-        width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        width: 44, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center',
         borderRadius: 8, flexShrink: 0, cursor: 'pointer',
         border: `1px solid ${active && activeBorder ? activeBorder : 'var(--border)'}`,
         background: active ? activeBg : 'transparent',
@@ -75,19 +75,20 @@ function ActionBtn({
 }
 
 // ── Skeleton loading row ──────────────────────
-function SkeletonRow({ colCount }: { colCount: number }) {
+function SkeletonRow({ cols }: { cols: { k: string; w?: number }[] }) {
   return (
     <tr>
-      {Array.from({ length: colCount }).map((_, i) => (
-        <td key={i} style={{ padding: '11px 12px' }}>
+      {cols.map((col, i) => (
+        <td key={col.k} style={{ padding: '11px 12px', width: col.w ?? undefined }}>
           <div style={{
             height: 12, borderRadius: 4, background: 'var(--border)',
-            width: i === 0 ? 28 : i === colCount - 1 ? '60%' : '80%',
+            width: i === 0 ? 28 : '75%',
             animation: 'pulse 1.4s ease-in-out infinite',
+            animationDelay: `${i * 0.08}s`,
           }} />
         </td>
       ))}
-      <td style={{ padding: '11px 8px', width: 36 }} />
+      <td style={{ padding: '11px 8px', width: 110 }} />
     </tr>
   )
 }
@@ -182,7 +183,7 @@ function EditableCell({ value, colKey, colType, rowId, readOnly, isMatch, highli
 
   if (editing) {
     return (
-      <td style={{ padding: '4px 6px', minWidth: colType === 'date' ? 130 : undefined }}>
+      <td className="cell-editing" style={{ padding: '4px 6px', minWidth: colType === 'date' ? 130 : undefined }}>
         <input
           ref={inputRef}
           type={colType === 'date' ? 'date' : 'text'}
@@ -522,11 +523,23 @@ export default function AppPage() {
   const [rowHistTarget, setRowHistTarget] = useState<BookRow | null>(null)
 
   const openLock = useCallback(() => {
-    if (!hasPin)              setLockMode('set')      // belum ada PIN → buat PIN
-    else if (isGlobalLocked)  setLockMode('unlock')   // sedang terkunci → buka
-    else                      setLockMode('relock')   // sedang terbuka → kunci kembali
+    if (!hasPin)              setLockMode('set')
+    else if (isGlobalLocked)  setLockMode('unlock')
+    else                      setLockMode('relock')
     setLockOpen(true)
   }, [hasPin, isGlobalLocked])
+
+  // ── Custom event: sidebar buka modal dengan data lengkap ──
+  useEffect(() => {
+    const onPrint  = () => setPrintOpen(true)
+    const onExport = () => setExportOpen(true)
+    window.addEventListener('buregdes:openPrint',  onPrint)
+    window.addEventListener('buregdes:openExport', onExport)
+    return () => {
+      window.removeEventListener('buregdes:openPrint',  onPrint)
+      window.removeEventListener('buregdes:openExport', onExport)
+    }
+  }, [])
 
   const handleToggleRowLock = useCallback(async (ri: number) => {
     try { await toggleRowLock(activeBook.id, ri, activeYear) }
@@ -593,12 +606,6 @@ export default function AppPage() {
         <ActionBtn onClick={() => { setRowHistTarget(null); setHistOpen(true) }} title="Riwayat Edit" active={histEntries.length > 0} activeColor="var(--warning)" activeBg="rgba(245,158,11,0.08)">
           <History size={16} />
         </ActionBtn>
-        <ActionBtn onClick={() => setPrintOpen(true)} title="Cetak">
-          <Printer size={16} />
-        </ActionBtn>
-        <ActionBtn onClick={() => setExportOpen(true)} title="Export / Backup">
-          <FileSpreadsheet size={16} />
-        </ActionBtn>
 
         <div style={{ width: 1, height: 24, background: 'var(--border)', flexShrink: 0, margin: '0 2px' }} />
 
@@ -632,10 +639,10 @@ export default function AppPage() {
                 {activeBook.cols.map(col => (
                   <th key={col.k} style={{ padding: '8px 12px', textAlign: 'left', fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', width: col.w ?? undefined }}>{col.l}</th>
                 ))}
-                <th style={{ width: 36 }} />
+                <th style={{ width: 110 }} />
               </tr>
             </thead>
-            <tbody>{Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} colCount={activeBook.cols.length} />)}</tbody>
+            <tbody>{Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} cols={activeBook.cols} />)}</tbody>
           </table>
         </div>
       </div>
@@ -731,7 +738,7 @@ export default function AppPage() {
                 <th style={{
                   position: 'sticky', top: 0, zIndex: 3,
                   background: 'var(--bg-table-head)',
-                  width: 96, padding: '6px 8px 4px',
+                  width: 110, padding: '6px 8px 4px',
                   borderBottom: '2px solid var(--border)',
                 }} />
               </tr>
@@ -767,7 +774,7 @@ export default function AppPage() {
                       />
                     ))}
                     <td style={{
-                      padding: '4px 6px', width: 96, whiteSpace: 'nowrap',
+                      padding: '4px 6px', width: 110, whiteSpace: 'nowrap',
                       borderLeft: '1px solid var(--border)',
                     }}>
                       <div style={{ display: 'flex', gap: 2, justifyContent: 'center', alignItems: 'center' }}>

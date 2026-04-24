@@ -1,6 +1,6 @@
 'use client'
-// BuRegDes Next — Header (Session 15)
-// Baris 1: Hamburger | BUKU REGISTER / Desa Karang Sengon [/ Kec. Kab.] | Presence · Tema · Cari
+// BuRegDes Next — Header (UI/UX Upgrade)
+// Baris 1: Hamburger | BUKU REGISTER / Desa Karang Sengon | Offline · Presence · Tema · Cari
 
 import { useCallback, useState, useEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
@@ -9,6 +9,8 @@ import { useApp }       from '@/contexts/AppContext'
 import { useDesaInfo }  from '@/hooks/useDesaInfo'
 import { usePresence }  from '@/hooks/usePresence'
 import { getTheme, setTheme } from '@/lib/session'
+import { db }           from '@/lib/firebase'
+import { ref, onValue } from 'firebase/database'
 
 interface HeaderProps {
   onMenuClick: () => void
@@ -32,6 +34,7 @@ export function Header({ onMenuClick }: HeaderProps) {
   const { onlineUsers, myUid } = usePresence()
 
   const [isDark,       setIsDark]       = useState(true)
+  const [isOnline,     setIsOnline]     = useState(true)
   // Search dikelola via AppContext — page.tsx yang filter data
   const clearQuery = () => setSearchQuery('')
   const [presenceOpen, setPresenceOpen] = useState(false)
@@ -40,6 +43,14 @@ export function Header({ onMenuClick }: HeaderProps) {
 
   useEffect(() => {
     setIsDark(document.documentElement.getAttribute('data-theme') !== 'light')
+  }, [])
+
+  useEffect(() => {
+    const connRef = ref(db, '.info/connected')
+    const unsub = onValue(connRef, snap => {
+      setIsOnline(snap.val() === true)
+    })
+    return () => unsub()
   }, [])
 
   const toggleTheme = useCallback(() => {
@@ -52,12 +63,12 @@ export function Header({ onMenuClick }: HeaderProps) {
   }, [searchOpen])
 
   // Nama desa dari RTDB, fallback default
-  const namaDesa    = desaInfo.desa ? (desaInfo.desa.toLowerCase().startsWith('desa ') ? desaInfo.desa : `Desa ${desaInfo.desa}`) : 'Desa Karang Sengon'
-  const kecamatan   = desaInfo.kecamatan || 'Klabang'
-  const kabupaten   = desaInfo.kabupaten || 'Bondowoso'
+  const namaDesa = desaInfo.desa
+    ? (desaInfo.desa.toLowerCase().startsWith('desa ') ? desaInfo.desa : `Desa ${desaInfo.desa}`)
+    : 'Desa Karang Sengon'
 
   return (
-    <header style={{
+    <header className="will-animate" style={{
       flexShrink: 0, background: 'var(--bg-card)',
       borderBottom: '1px solid var(--border)',
       position: 'relative', zIndex: 30,
@@ -97,22 +108,36 @@ export function Header({ onMenuClick }: HeaderProps) {
           }}>
             {namaDesa}
           </p>
-          <p style={{
-            margin: 0, fontSize: 10, color: 'var(--text-muted)', lineHeight: 1.2,
-            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-          }}>
-            Kecamatan {kecamatan} &nbsp;·&nbsp; Kabupaten {kabupaten}
-          </p>
         </div>
 
-        {/* Right controls: Presence · Tema · Cari */}
+        {/* Right controls: Offline · Presence · Tema · Cari */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 2, flexShrink: 0 }}>
+
+          {/* ── Offline indicator ── */}
+          {!isOnline && (
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 4,
+              padding: '3px 8px', borderRadius: 6,
+              background: 'rgba(239,68,68,0.12)',
+              border: '1px solid rgba(239,68,68,0.25)',
+              flexShrink: 0,
+            }}>
+              <span style={{
+                width: 6, height: 6, borderRadius: '50%',
+                background: 'var(--danger)', flexShrink: 0,
+              }} />
+              <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--danger)' }}>
+                Offline
+              </span>
+            </div>
+          )}
 
           {/* ── Presence avatar ── */}
           {onlineUsers.length > 0 && (
             <div style={{ position: 'relative' }}>
               <button
                 onClick={() => setPresenceOpen(v => !v)}
+                aria-label="Lihat siapa yang online"
                 title="Lihat siapa yang online"
                 style={{
                   display: 'flex', alignItems: 'center', gap: 4,
@@ -195,6 +220,7 @@ export function Header({ onMenuClick }: HeaderProps) {
           {/* Tema toggle */}
           <button
             onClick={toggleTheme}
+            aria-label="Ganti tema"
             title="Ganti tema"
             style={{
               width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -210,6 +236,7 @@ export function Header({ onMenuClick }: HeaderProps) {
           {/* Cari */}
           <button
             onClick={() => setSearchOpen(v => !v)}
+            aria-label="Cari data"
             title="Cari"
             style={{
               width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center',

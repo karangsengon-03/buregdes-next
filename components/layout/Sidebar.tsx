@@ -1,18 +1,17 @@
 'use client'
 // ─────────────────────────────────────────────
-// BuRegDes Next — Sidebar (Session 13)
-// · Hamburger-only navigation (BottomNav dihapus)
-// · Year selector dropdown di dalam sidebar
-// · Link ke Pengaturan
-// · Tampilkan versi app di header sidebar
-// · Auto-close saat pilih buku / navigasi
+// BuRegDes Next — Sidebar (UI/UX Upgrade)
+// · Logo di header sidebar
+// · Section Dokumen & Data (Cetak, Export/Backup)
+// · Custom event untuk buka modal dari page.tsx
+// · will-animate GPU acceleration
 // ─────────────────────────────────────────────
 
 import { useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import {
   X, BookOpen, LogOut, User, ChevronRight,
-  Settings, ChevronDown,
+  Settings, ChevronDown, Printer, FileSpreadsheet,
 } from 'lucide-react'
 import { useApp }      from '@/contexts/AppContext'
 import { useAuth }     from '@/hooks/useAuth'
@@ -83,6 +82,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
 
       {/* Panel */}
       <aside
+        className="will-animate"
         aria-label="Sidebar navigasi"
         style={{
           position: 'fixed', left: 0, top: 0, bottom: 0, zIndex: 50,
@@ -110,28 +110,42 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           borderBottom: '1px solid var(--sidebar-divider)',
           flexShrink: 0,
         }}>
-          <div>
-            <p style={{
-              fontSize: 9, fontWeight: 700, letterSpacing: '0.12em',
-              color: 'var(--text-muted)', margin: 0,
-              textTransform: 'uppercase',
-            }}>
-              BUKU REGISTER DESA
-            </p>
-            <div style={{ marginTop: 2 }}>
-              <h2 style={{
-                fontSize: 16, fontWeight: 800,
-                color: 'var(--sidebar-fg-title)', margin: 0, lineHeight: 1.2,
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            {/* Logo */}
+            <img
+              src="/icons/icon-192.png"
+              alt="BuRegDes Next"
+              style={{
+                width: 36, height: 36,
+                borderRadius: 9,
+                objectFit: 'contain',
+                flexShrink: 0,
+              }}
+            />
+            {/* Teks brand */}
+            <div>
+              <p style={{
+                fontSize: 9, fontWeight: 700, letterSpacing: '0.12em',
+                color: 'var(--text-muted)', margin: 0,
+                textTransform: 'uppercase',
               }}>
-                BuRegDes Next
-              </h2>
-              <span style={{
-                fontSize: 10, fontWeight: 600,
-                color: 'var(--accent)',
-                fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)',
-              }}>
-                v{APP_VERSION}
-              </span>
+                Buku Register Desa
+              </p>
+              <div style={{ marginTop: 2 }}>
+                <h2 style={{
+                  fontSize: 15, fontWeight: 800,
+                  color: 'var(--sidebar-fg-title)', margin: 0, lineHeight: 1.2,
+                }}>
+                  BuRegDes Next
+                </h2>
+                <span style={{
+                  fontSize: 10, fontWeight: 600,
+                  color: 'var(--accent)',
+                  fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)',
+                }}>
+                  v{APP_VERSION}
+                </span>
+              </div>
             </div>
           </div>
           <button
@@ -261,6 +275,80 @@ export function Sidebar({ open, onClose }: SidebarProps) {
               </button>
             )
           })}
+
+          {/* ── Divider ── */}
+          <div style={{ height: 1, background: 'var(--sidebar-divider)', margin: '8px 16px' }} />
+
+          {/* ── Section: DOKUMEN & DATA ── */}
+          <p style={{
+            fontSize: 9, fontWeight: 700, letterSpacing: '0.10em',
+            color: 'var(--sidebar-fg-muted)', margin: '8px 16px 4px',
+            textTransform: 'uppercase',
+          }}>
+            Dokumen &amp; Data
+          </p>
+
+          {/* Cetak — dispatch custom event, page.tsx yang buka modal dengan data lengkap */}
+          <button
+            onClick={() => {
+              window.dispatchEvent(new CustomEvent('buregdes:openPrint'))
+              onClose()
+            }}
+            aria-label="Cetak buku aktif"
+            style={{
+              width: '100%',
+              display: 'flex', alignItems: 'center', gap: 12,
+              padding: '9px 16px',
+              textAlign: 'left',
+              background: 'transparent',
+              border: 'none', cursor: 'pointer',
+              transition: 'background var(--transition-fast)',
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = 'var(--sidebar-hover)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+          >
+            <div style={{
+              width: 30, height: 30, borderRadius: 8,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              flexShrink: 0, background: 'rgba(255,255,255,0.06)',
+            }}>
+              <Printer size={14} style={{ color: 'var(--text-secondary)' }} />
+            </div>
+            <p style={{ fontSize: 13, fontWeight: 400, color: 'var(--sidebar-fg)', margin: 0 }}>
+              Cetak
+            </p>
+          </button>
+
+          {/* Export / Backup — dispatch custom event */}
+          <button
+            onClick={() => {
+              window.dispatchEvent(new CustomEvent('buregdes:openExport'))
+              onClose()
+            }}
+            aria-label="Export dan backup data"
+            style={{
+              width: '100%',
+              display: 'flex', alignItems: 'center', gap: 12,
+              padding: '9px 16px',
+              textAlign: 'left',
+              background: 'transparent',
+              border: 'none', cursor: 'pointer',
+              transition: 'background var(--transition-fast)',
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = 'var(--sidebar-hover)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+          >
+            <div style={{
+              width: 30, height: 30, borderRadius: 8,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              flexShrink: 0, background: 'rgba(255,255,255,0.06)',
+            }}>
+              <FileSpreadsheet size={14} style={{ color: 'var(--text-secondary)' }} />
+            </div>
+            <p style={{ fontSize: 13, fontWeight: 400, color: 'var(--sidebar-fg)', margin: 0 }}>
+              Export / Backup
+            </p>
+          </button>
 
           {/* ── Divider ── */}
           <div style={{ height: 1, background: 'var(--sidebar-divider)', margin: '8px 16px' }} />

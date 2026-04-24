@@ -1,11 +1,12 @@
 {
+  "id": "/",
   "name": "BuRegDes Next",
   "short_name": "BuRegDes Next",
   "description": "Buku Register Administrasi Desa Digital",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0D1B2A",
-  "theme_color": "#0D1B2A",
+  "theme_color": "#0A1628",
   "orientation": "portrait",
   "icons": [
     { "src": "/icons/icon-72.png",  "sizes": "72x72",   "type": "image/png", "purpose": "any" },

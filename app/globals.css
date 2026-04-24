@@ -57,6 +57,18 @@
 
   --stripe-gradient: linear-gradient(90deg, #F59E0B, #EF4444, #10B981, #3B82F6);
   --stripe-h:        4px;
+
+  --data-text: #E2E8F0;
+  --data-mono: #93C5FD;
+
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  12px;
+  --radius-xl:  16px;
+
+  --transition-fast:   150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow:   300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ── CSS Variables — Light Mode ──────────────────────── */
@@ -111,6 +123,9 @@
   --sidebar-divider:   rgba(0,0,0,0.08);
   --text-sidebar:      #334155;
   --text-sidebar-active: #0F172A;
+
+  --data-text: #0F172A;
+  --data-mono: #2563EB;
 }
 
 /* ── Base ─────────────────────────────────────────────── */
@@ -160,6 +175,25 @@ html, body {
   @keyframes rippleAnim {
     to { transform: scale(4); opacity: 0; }
   }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.5; }
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  .will-animate {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+  }
 }
 
 .br-input {
@@ -167,7 +201,7 @@ html, body {
   background: var(--bg-input);
   color: var(--text-primary);
   border: 1.5px solid var(--border-input);
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   padding: 11px 14px;
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 14px;
@@ -185,7 +219,7 @@ html, body {
   background: var(--accent);
   color: #fff;
   border: none;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   padding: 13px 20px;
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 15px;
@@ -207,7 +241,7 @@ html, body {
   background: transparent;
   color: var(--text-secondary);
   border: 1.5px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   padding: 11px 20px;
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 14px;
@@ -225,7 +259,7 @@ html, body {
 
 .br-toast {
   position: fixed;
-  bottom: 80px;
+  bottom: calc(16px + env(safe-area-inset-bottom));
   left: 50%;
   transform: translateX(-50%) translateY(20px);
   background: var(--bg-elevated);
@@ -247,13 +281,61 @@ html, body {
   transform: translateX(-50%) translateY(0);
 }
 
-/* ── Data cell text colors (lansia-friendly, kontras tinggi) ─── */
-:root,
-[data-theme="dark"] {
-  --data-text: #F5A623;   /* amber warm — kontras di bg gelap */
-  --data-mono: #FBBF24;   /* amber lebih terang untuk mono/kode */
+/* ── Cell editing ─────────────────────────────────────── */
+.cell-editing {
+  background: var(--bg-input) !important;
+  border: 1.5px solid var(--accent) !important;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 0 0 3px var(--accent-subtle);
+  padding: 4px 8px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  color: var(--text-primary);
+  outline: none;
+  width: 100%;
 }
-[data-theme="light"] {
-  --data-text: #1A3C5E;   /* navy gelap — kontras di bg terang */
-  --data-mono: #1D4ED8;   /* biru gelap untuk mono/kode */
+
+/* ── Skeleton loading ─────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-elevated) 25%,
+    var(--bg-card) 50%,
+    var(--bg-elevated) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+
+/* ── Animated badge ───────────────────────────────────── */
+.badge-pulse {
+  animation: badgePulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+@keyframes badgePulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.85; transform: scale(1.08); }
+}
+
+/* ── Smooth modal entrance ────────────────────────────── */
+.modal-enter {
+  animation: modalEnter var(--transition-slow) forwards;
+}
+@keyframes modalEnter {
+  from { opacity: 0; transform: scale(0.95) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ── Focus ring overrides ─────────────────────────────── */
+button:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+
