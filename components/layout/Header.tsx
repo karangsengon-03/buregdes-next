@@ -117,9 +117,9 @@ export function Header({ onMenuClick }: HeaderProps) {
           {!isOnline && (
             <div style={{
               display: 'flex', alignItems: 'center', gap: 4,
-              padding: '3px 8px', borderRadius: 6,
-              background: 'rgba(239,68,68,0.12)',
-              border: '1px solid rgba(239,68,68,0.25)',
+              padding: '3px 8px', borderRadius: 'var(--radius-sm)',
+              background: 'var(--danger-subtle)',
+              border: '1px solid var(--danger-border)',
               flexShrink: 0,
             }}>
               <span style={{
@@ -147,8 +147,8 @@ export function Header({ onMenuClick }: HeaderProps) {
               >
                 <span style={{
                   width: 7, height: 7, borderRadius: '50%',
-                  background: '#10B981', flexShrink: 0,
-                  boxShadow: '0 0 5px #10B981',
+                  background: 'var(--success)', flexShrink: 0,
+                  boxShadow: '0 0 5px var(--success)',
                 }} />
                 {onlineUsers.slice(0, 3).map((u, i) => (
                   <div key={u.uid} style={{
@@ -208,7 +208,7 @@ export function Header({ onMenuClick }: HeaderProps) {
                           {u.name}
                           {u.uid === myUid && <span style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 400, marginLeft: 4 }}>(saya)</span>}
                         </p>
-                        <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#10B981', flexShrink: 0 }} />
+                        <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--success)', flexShrink: 0 }} />
                       </div>
                     ))}
                   </div>
@@ -223,9 +223,10 @@ export function Header({ onMenuClick }: HeaderProps) {
             aria-label="Ganti tema"
             title="Ganti tema"
             style={{
-              width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center',
               borderRadius: 9, color: 'var(--text-secondary)',
               background: 'transparent', border: 'none', cursor: 'pointer',
+              transition: 'background var(--transition-fast)',
             }}
             onMouseEnter={e => e.currentTarget.style.background = 'var(--accent-subtle)'}
             onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
@@ -239,11 +240,12 @@ export function Header({ onMenuClick }: HeaderProps) {
             aria-label="Cari data"
             title="Cari"
             style={{
-              width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center',
               borderRadius: 9,
               color: searchOpen ? 'var(--accent)' : 'var(--text-secondary)',
               background: searchOpen ? 'var(--accent-subtle)' : 'transparent',
               border: 'none', cursor: 'pointer',
+              transition: 'background var(--transition-fast)',
             }}
           >
             <Search size={16} />

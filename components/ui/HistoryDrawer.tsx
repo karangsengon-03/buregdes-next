@@ -77,7 +77,7 @@ export function HistoryDrawer({
         style={{
           position: 'fixed', inset: 0, zIndex: 60,
           background: 'rgba(0,0,0,0.55)',
-          backdropFilter: 'blur(2px)',
+          backdropFilter: 'blur(3px)',
         }}
       />
 
@@ -92,7 +92,7 @@ export function HistoryDrawer({
         boxShadow: '0 -8px 40px rgba(0,0,0,0.5)',
       }}>
         {/* Handle */}
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '10px 0 0' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '10px 0 6px' }}>
           <div style={{ width: 36, height: 4, borderRadius: 2, background: 'var(--border)' }} />
         </div>
 
@@ -102,11 +102,11 @@ export function HistoryDrawer({
           padding: '12px 16px', borderBottom: '1px solid var(--border)', flexShrink: 0,
         }}>
           <div style={{
-            width: 32, height: 32, borderRadius: 8, flexShrink: 0,
-            background: 'rgba(245,158,11,0.12)',
+            width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+            background: 'var(--warning-subtle)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <History size={15} style={{ color: 'var(--warning)' }} />
+            <History size={18} style={{ color: 'var(--warning)' }} />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <p style={{ margin: 0, fontSize: 15, fontWeight: 700, color: 'var(--text-primary)' }}>
@@ -120,12 +120,15 @@ export function HistoryDrawer({
             onClick={onClose}
             style={{
               width: 32, height: 32, borderRadius: 8,
-              background: 'var(--bg-elevated)', border: '1px solid var(--border)',
+              background: 'transparent', border: '1px solid var(--border)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               color: 'var(--text-muted)', cursor: 'pointer',
+              transition: 'background var(--transition-fast)',
             }}
+            onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-hover)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
           >
-            <X size={15} />
+            <X size={16} />
           </button>
         </div>
 

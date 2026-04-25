@@ -72,8 +72,8 @@ export function AddRowModal({ open, cols, onClose, onAdd }: AddRowModalProps) {
         alignItems: 'flex-end',
         justifyContent: 'center',
         background: 'rgba(0,0,0,0.6)',
-        backdropFilter: 'blur(4px)',
-        WebkitBackdropFilter: 'blur(4px)',
+        backdropFilter: 'blur(3px)',
+        WebkitBackdropFilter: 'blur(3px)',
       }}
       onClick={onClose}
     >
@@ -94,7 +94,7 @@ export function AddRowModal({ open, cols, onClose, onAdd }: AddRowModalProps) {
         onClick={e => e.stopPropagation()}
       >
         {/* Handle */}
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '10px 0 4px' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '10px 0 6px' }}>
           <div style={{ width: 36, height: 4, borderRadius: 2, background: 'var(--border)' }} />
         </div>
 
@@ -109,12 +109,13 @@ export function AddRowModal({ open, cols, onClose, onAdd }: AddRowModalProps) {
         >
           <div
             style={{
-              width: 32, height: 32, borderRadius: 8, flexShrink: 0,
+              width: 36, height: 36, borderRadius: 10, flexShrink: 0,
               background: 'var(--accent-subtle)',
+              border: '1px solid var(--accent-border)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}
           >
-            <Plus size={16} style={{ color: 'var(--accent)' }} />
+            <Plus size={18} style={{ color: 'var(--accent)' }} />
           </div>
           <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', flex: 1 }}>
             Tambah Baris
@@ -122,12 +123,15 @@ export function AddRowModal({ open, cols, onClose, onAdd }: AddRowModalProps) {
           <button
             onClick={onClose}
             style={{
-              width: 28, height: 28, display: 'flex', alignItems: 'center',
-              justifyContent: 'center', borderRadius: 6, border: 'none',
+              width: 32, height: 32, display: 'flex', alignItems: 'center',
+              justifyContent: 'center', borderRadius: 8, border: 'none',
               background: 'transparent', color: 'var(--text-muted)', cursor: 'pointer',
+              transition: 'background var(--transition-fast)',
             }}
+            onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-hover)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
           >
-            <X size={15} />
+            <X size={16} />
           </button>
         </div>
 
@@ -138,11 +142,10 @@ export function AddRowModal({ open, cols, onClose, onAdd }: AddRowModalProps) {
               <label
                 style={{
                   display: 'block',
-                  fontSize: 11,
-                  fontWeight: 600,
+                  fontSize: 11, fontWeight: 600,
                   color: 'var(--text-muted)',
                   textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
+                  letterSpacing: '0.06em',
                   marginBottom: 5,
                 }}
               >
@@ -155,21 +158,19 @@ export function AddRowModal({ open, cols, onClose, onAdd }: AddRowModalProps) {
                 onChange={e => setForm(prev => ({ ...prev, [col.k]: e.target.value }))}
                 onKeyDown={e => { if (e.key === 'Enter') handleSubmit() }}
                 style={{
-                  width: '100%',
-                  padding: '10px 12px',
-                  borderRadius: 10,
-                  border: '1px solid var(--border)',
-                  background: 'var(--bg-input)',
-                  color: 'var(--text-primary)',
+                  width: '100%', padding: '10px 12px',
+                  borderRadius: 'var(--radius-md)',
+                  border: '1.5px solid var(--border-input)',
+                  background: 'var(--bg-input)', color: 'var(--text-primary)',
                   fontSize: col.type === 'mono' ? 13 : 14,
                   fontFamily: col.type === 'mono'
                     ? 'var(--font-mono, "JetBrains Mono", monospace)'
                     : 'inherit',
-                  outline: 'none',
-                  boxSizing: 'border-box',
+                  outline: 'none', boxSizing: 'border-box',
+                  transition: 'border-color var(--transition-fast)',
                 }}
-                onFocus={e => { e.currentTarget.style.borderColor = 'var(--border-focus)' }}
-                onBlur={e => { e.currentTarget.style.borderColor = 'var(--border)' }}
+                onFocus={e => { e.currentTarget.style.borderColor = 'var(--border-focus)'; e.currentTarget.style.boxShadow = '0 0 0 3px var(--accent-subtle)' }}
+                onBlur={e => { e.currentTarget.style.borderColor = 'var(--border-input)'; e.currentTarget.style.boxShadow = 'none' }}
                 placeholder={col.type === 'date' ? 'yyyy-mm-dd' : `Isi ${col.l.toLowerCase()}…`}
               />
             </div>
@@ -183,19 +184,13 @@ export function AddRowModal({ open, cols, onClose, onAdd }: AddRowModalProps) {
             onClick={handleSubmit}
             disabled={loading}
             style={{
-              width: '100%',
-              padding: '12px',
-              borderRadius: 12,
-              fontSize: 14,
-              fontWeight: 700,
+              width: '100%', padding: '12px',
+              borderRadius: 'var(--radius-md)', fontSize: 14, fontWeight: 700,
               border: 'none',
               background: loading ? 'var(--text-muted)' : 'var(--accent)',
-              color: '#fff',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 8,
+              color: '#fff', cursor: loading ? 'not-allowed' : 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              transition: 'background var(--transition-fast)',
             }}
           >
             {loading ? (

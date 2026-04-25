@@ -61,7 +61,7 @@ function ActionBtn({
         border: `1px solid ${active && activeBorder ? activeBorder : 'var(--border)'}`,
         background: active ? activeBg : 'transparent',
         color: active ? activeColor : 'var(--text-muted)',
-        transition: 'background 150ms, color 150ms',
+        transition: 'background var(--transition-fast), color var(--transition-fast)',
       }}
       onMouseEnter={e => { e.currentTarget.style.background = activeBg; e.currentTarget.style.color = activeColor }}
       onMouseLeave={e => {
@@ -217,7 +217,7 @@ function EditableCell({ value, colKey, colType, rowId, readOnly, isMatch, highli
         padding: '11px 12px', fontSize: 14,
         color: textColor,
         cursor: readOnly ? 'default' : 'pointer',
-        transition: 'background 120ms',
+        transition: 'background var(--transition-fast)',
         fontFamily: colType === 'mono'
           ? 'var(--font-mono, "JetBrains Mono", monospace)' : 'inherit',
         background: isMatch && !isEmpty ? 'rgba(59,130,246,0.06)' : 'transparent',
@@ -279,7 +279,9 @@ function CardEditModal({ open, row, cols, locked, onClose, onSave }: CardEditMod
       onClick={onClose}
       style={{
         position: 'fixed', inset: 0, zIndex: 60,
-        background: 'rgba(0,0,0,0.55)',
+        background: 'rgba(0,0,0,0.6)',
+        backdropFilter: 'blur(3px)',
+        WebkitBackdropFilter: 'blur(3px)',
         display: 'flex', alignItems: 'flex-end',
         animation: 'fadeIn 150ms ease',
       }}
@@ -289,20 +291,23 @@ function CardEditModal({ open, row, cols, locked, onClose, onSave }: CardEditMod
         style={{
           width: '100%', maxWidth: 480, margin: '0 auto',
           background: 'var(--bg-elevated)',
-          borderRadius: '16px 16px 0 0',
-          padding: '16px 16px calc(16px + env(safe-area-inset-bottom))',
+          borderRadius: '18px 18px 0 0',
+          padding: '0 16px calc(16px + env(safe-area-inset-bottom))',
           animation: 'slideUp 200ms ease',
           maxHeight: '85vh', overflowY: 'auto',
         }}
       >
-        <div style={{ width: 36, height: 4, borderRadius: 2, background: 'var(--border)', margin: '0 auto 14px' }} />
+        {/* Handle */}
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '10px 0 6px' }}>
+          <div style={{ width: 36, height: 4, borderRadius: 2, background: 'var(--border)' }} />
+        </div>
         <p style={{ margin: '0 0 14px', fontSize: 15, fontWeight: 700, color: 'var(--text-primary)' }}>
           Edit Baris No. {row.no}
         </p>
         {locked && (
           <div style={{
-            padding: '8px 12px', borderRadius: 8, marginBottom: 12,
-            background: 'rgba(245,158,11,0.10)', border: '1px solid rgba(245,158,11,0.25)',
+            padding: '8px 12px', borderRadius: 'var(--radius-sm)', marginBottom: 12,
+            background: 'var(--warning-subtle)', border: '1px solid var(--warning-border)',
             fontSize: 13, color: 'var(--warning)',
             display: 'flex', alignItems: 'center', gap: 6,
           }}>
@@ -312,7 +317,11 @@ function CardEditModal({ open, row, cols, locked, onClose, onSave }: CardEditMod
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {cols.filter(c => !c.ro).map(col => (
             <div key={col.k}>
-              <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: 4 }}>
+              <label style={{
+                fontSize: 11, fontWeight: 600, color: 'var(--text-muted)',
+                display: 'block', marginBottom: 4,
+                textTransform: 'uppercase', letterSpacing: '0.06em',
+              }}>
                 {col.l}
               </label>
               <input
@@ -321,16 +330,17 @@ function CardEditModal({ open, row, cols, locked, onClose, onSave }: CardEditMod
                 onChange={e => setDraft(prev => ({ ...prev, [col.k]: e.target.value }))}
                 disabled={locked || saving}
                 style={{
-                  width: '100%', padding: '9px 10px', fontSize: 14,
-                  borderRadius: 8, border: '1.5px solid var(--border)',
+                  width: '100%', padding: '9px 12px', fontSize: 14,
+                  borderRadius: 'var(--radius-md)', border: '1.5px solid var(--border-input)',
                   background: locked ? 'var(--bg-card)' : 'var(--bg-input)',
                   color: 'var(--text-primary)', outline: 'none',
                   fontFamily: col.type === 'mono'
                     ? 'var(--font-mono, "JetBrains Mono", monospace)' : 'inherit',
                   boxSizing: 'border-box',
+                  transition: 'border-color var(--transition-fast), box-shadow var(--transition-fast)',
                 }}
-                onFocus={e => { if (!locked) e.currentTarget.style.borderColor = 'var(--accent)' }}
-                onBlur={e => { e.currentTarget.style.borderColor = 'var(--border)' }}
+                onFocus={e => { if (!locked) { e.currentTarget.style.borderColor = 'var(--border-focus)'; e.currentTarget.style.boxShadow = '0 0 0 3px var(--accent-subtle)' } }}
+                onBlur={e => { e.currentTarget.style.borderColor = 'var(--border-input)'; e.currentTarget.style.boxShadow = 'none' }}
               />
             </div>
           ))}
@@ -339,19 +349,23 @@ function CardEditModal({ open, row, cols, locked, onClose, onSave }: CardEditMod
           <button
             onClick={onClose}
             style={{
-              flex: 1, padding: '10px', borderRadius: 9, fontSize: 14, fontWeight: 600,
+              flex: 1, padding: '11px', borderRadius: 'var(--radius-md)', fontSize: 14, fontWeight: 600,
               border: '1px solid var(--border)', background: 'transparent',
               color: 'var(--text-secondary)', cursor: 'pointer',
+              transition: 'background var(--transition-fast)',
             }}
+            onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-hover)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
           >Batal</button>
           {!locked && (
             <button
               onClick={handleSave}
               disabled={saving}
               style={{
-                flex: 2, padding: '10px', borderRadius: 9, fontSize: 14, fontWeight: 700,
+                flex: 2, padding: '11px', borderRadius: 'var(--radius-md)', fontSize: 14, fontWeight: 700,
                 border: 'none', background: 'var(--accent)', color: '#fff',
                 cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.7 : 1,
+                transition: 'background var(--transition-fast)',
               }}
             >{saving ? 'Menyimpan...' : 'Simpan'}</button>
           )}
@@ -446,13 +460,13 @@ function EntryCard({
           )}
           {!isLocked && !globalLocked && (
             <button onClick={() => onEdit(row)} title="Edit"
-              style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 7, border: 'none', background: 'transparent', color: 'var(--text-muted)', cursor: 'pointer' }}>
+              style={{ width: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 7, border: 'none', background: 'transparent', color: 'var(--text-muted)', cursor: 'pointer', transition: 'background var(--transition-fast), color var(--transition-fast)' }}>
               <Pencil size={14} />
             </button>
           )}
           {!isLocked && !globalLocked && (
             <button onClick={() => onDelete(row)} title="Hapus"
-              style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 7, border: 'none', background: 'transparent', color: 'var(--text-muted)', cursor: 'pointer' }}>
+              style={{ width: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 7, border: 'none', background: 'transparent', color: 'var(--text-muted)', cursor: 'pointer', transition: 'background var(--transition-fast), color var(--transition-fast)' }}>
               <Trash2 size={14} />
             </button>
           )}
@@ -461,7 +475,7 @@ function EntryCard({
       <div style={{ padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: 8 }}>
         {previewCols.map(col => (
           <div key={col.k}>
-            <p style={{ margin: '0 0 2px', fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <p style={{ margin: '0 0 2px', fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
               {col.l}
             </p>
             <div>{renderVal(col, row[col.k] as string | number | undefined)}</div>
@@ -471,7 +485,7 @@ function EntryCard({
           <>
             {expanded && extraCols.map(col => (
               <div key={col.k}>
-                <p style={{ margin: '0 0 2px', fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <p style={{ margin: '0 0 2px', fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                   {col.l}
                 </p>
                 <div>{renderVal(col, row[col.k] as string | number | undefined)}</div>
@@ -659,7 +673,7 @@ export default function AppPage() {
           <p style={{ fontSize: 14, color: 'var(--text-secondary)', margin: 0, textAlign: 'center' }}>
             Gagal memuat data<br /><span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{error}</span>
           </p>
-          <button onClick={() => window.location.reload()} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 8, fontSize: 13, fontWeight: 600, background: 'var(--accent)', color: '#fff', border: 'none', cursor: 'pointer' }}>
+          <button onClick={() => window.location.reload()} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', borderRadius: 'var(--radius-md)', fontSize: 13, fontWeight: 600, background: 'var(--accent)', color: '#fff', border: 'none', cursor: 'pointer' }}>
             <RefreshCw size={14} /> Coba lagi
           </button>
         </div>
@@ -681,7 +695,7 @@ export default function AppPage() {
             <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: 0 }}>{activeBook.kode} · TA {activeYear}</p>
           </div>
           {canAdd && (
-            <button onClick={handleAddEmptyRow} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 20px', borderRadius: 9, fontSize: 14, fontWeight: 700, background: 'var(--accent)', color: '#fff', border: 'none', cursor: 'pointer' }}>
+            <button onClick={handleAddEmptyRow} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '9px 20px', borderRadius: 'var(--radius-md)', fontSize: 14, fontWeight: 700, background: 'var(--accent)', color: '#fff', border: 'none', cursor: 'pointer' }}>
               <Plus size={15} /> Tambah Baris Pertama
             </button>
           )}
@@ -754,7 +768,7 @@ export default function AppPage() {
                     style={{
                       borderBottom: '1px solid var(--border)',
                       background: rowLocked ? 'rgba(245,158,11,0.04)' : 'transparent',
-                      transition: 'background 100ms',
+                      transition: 'background var(--transition-fast)',
                       opacity: isBookLocked && !rowLocked ? 0.75 : 1,
                     }}
                     onMouseEnter={e => { if (!rowLocked) (e.currentTarget as HTMLTableRowElement).style.background = 'var(--bg-elevated)' }}
@@ -783,7 +797,7 @@ export default function AppPage() {
                           onClick={() => { setRowHistTarget(row); setHistOpen(true) }}
                           title="Riwayat baris ini"
                           style={{
-                            width: 28, height: 28, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                            width: 30, height: 30, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                             borderRadius: 6, border: 'none', background: 'transparent',
                             color: 'var(--text-muted)', cursor: 'pointer', flexShrink: 0,
                           }}
@@ -798,7 +812,7 @@ export default function AppPage() {
                             onClick={() => handleToggleRowLock(rowIdx)}
                             title={rowLocked ? 'Buka kunci baris' : 'Kunci baris'}
                             style={{
-                              width: 28, height: 28, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                              width: 30, height: 30, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                               borderRadius: 6, border: 'none', flexShrink: 0,
                               background: rowLocked ? 'rgba(245,158,11,0.15)' : 'transparent',
                               color: rowLocked ? 'var(--warning)' : 'var(--text-muted)',
@@ -816,7 +830,7 @@ export default function AppPage() {
                             onClick={() => setConfirmDelete(row)}
                             title="Hapus baris ini"
                             style={{
-                              width: 28, height: 28, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                              width: 30, height: 30, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                               borderRadius: 6, border: 'none', background: 'transparent',
                               color: 'var(--text-muted)', cursor: 'pointer', flexShrink: 0,
                             }}

@@ -31,7 +31,7 @@ function Section({
     <div
       style={{
         background: 'var(--bg-card)',
-        borderRadius: 14,
+        borderRadius: 'var(--radius-lg)',
         border: '1px solid var(--border)',
         overflow: 'hidden',
         marginBottom: 12}}
@@ -47,10 +47,11 @@ function Section({
       >
         <div
           style={{
-            width: 34,
-            height: 34,
+            width: 36,
+            height: 36,
             borderRadius: 9,
             background: 'var(--accent-subtle)',
+            border: '1px solid var(--accent-border)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -103,7 +104,7 @@ function FieldRow({
           fontWeight: 600,
           color: 'var(--text-muted)',
           textTransform: 'uppercase',
-          letterSpacing: '0.05em',
+          letterSpacing: '0.06em',
           marginBottom: 5}}
       >
         {label}
@@ -117,14 +118,14 @@ function FieldRow({
         style={{
           width: '100%',
           padding: '9px 12px',
-          borderRadius: 9,
+          borderRadius: 'var(--radius-md)',
           border: '1.5px solid var(--border)',
           background: disabled ? 'var(--bg-app)' : 'var(--bg-input)',
           color: disabled ? 'var(--text-muted)' : 'var(--text-primary)',
           fontSize: 13,
           outline: 'none',
           boxSizing: 'border-box',
-          transition: 'border-color 150ms',
+          transition: 'border-color var(--transition-fast)',
           cursor: disabled ? 'not-allowed' : 'text'}}
         onFocus={e => {
           if (!disabled) e.currentTarget.style.borderColor = 'var(--border-focus)'
@@ -152,7 +153,7 @@ function YearButton({
       style={{
         flex: 1,
         padding: '10px 4px',
-        borderRadius: 9,
+        borderRadius: 'var(--radius-md)',
         border: active ? '1.5px solid var(--accent)' : '1.5px solid var(--border)',
         background: active ? 'var(--accent-subtle)' : 'var(--bg-input)',
         color: active ? 'var(--accent)' : 'var(--text-secondary)',
@@ -160,7 +161,7 @@ function YearButton({
         fontWeight: active ? 700 : 500,
         fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)',
         cursor: 'pointer',
-        transition: 'all 150ms'}}
+        transition: 'all var(--transition-fast)'}}
     >
       {year}
     </button>
@@ -322,7 +323,7 @@ export default function SettingsPage() {
                   gap: 4,
                   padding: '3px 8px',
                   borderRadius: 8,
-                  background: 'rgba(16,185,129,0.12)',
+                  background: 'var(--success-subtle)',
                   color: 'var(--success)',
                   fontSize: 10,
                   fontWeight: 700}}
@@ -338,7 +339,7 @@ export default function SettingsPage() {
                   gap: 4,
                   padding: '3px 8px',
                   borderRadius: 8,
-                  background: 'rgba(245,158,11,0.12)',
+                  background: 'var(--warning-subtle)',
                   color: 'var(--warning)',
                   fontSize: 10,
                   fontWeight: 700}}
@@ -356,13 +357,12 @@ export default function SettingsPage() {
                   key={i}
                   style={{
                     height: 38,
-                    borderRadius: 9,
+                    borderRadius: 6,
                     background: 'var(--border)',
                     width: `${w}%`,
                     animation: 'pulse 1.4s ease-in-out infinite'}}
                 />
               ))}
-              <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }`}</style>
             </div>
           ) : (
             <>
@@ -415,7 +415,7 @@ export default function SettingsPage() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: 7,
-                  transition: 'background 150ms, color 150ms',
+                  transition: 'background var(--transition-fast), color var(--transition-fast)',
                   opacity: saving ? 0.7 : 1}}
                 onMouseEnter={e => {
                   if (dirty && !saving) e.currentTarget.style.background = 'var(--accent-hover)'
@@ -450,7 +450,7 @@ export default function SettingsPage() {
               onClick={openChangePIN}
               style={{
                 display: 'flex', alignItems: 'center', gap: 6,
-                padding: '8px 14px', borderRadius: 9, fontSize: 12, fontWeight: 600,
+                padding: '8px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600,
                 border: '1px solid var(--border)', background: 'var(--bg-elevated)',
                 color: 'var(--text-secondary)', cursor: 'pointer', flexShrink: 0}}
             >
@@ -472,7 +472,7 @@ export default function SettingsPage() {
               onClick={openMasterSetup}
               style={{
                 display: 'flex', alignItems: 'center', gap: 6,
-                padding: '8px 14px', borderRadius: 9, fontSize: 12, fontWeight: 600,
+                padding: '8px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600,
                 border: '1px solid var(--border)', background: 'var(--bg-elevated)',
                 color: 'var(--text-secondary)', cursor: 'pointer', flexShrink: 0}}
             >

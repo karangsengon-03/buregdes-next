@@ -251,7 +251,9 @@ export function LockModal({
       onClick={onClose}
       style={{
         position: 'fixed', inset: 0, zIndex: 1000,
-        background: 'rgba(0,0,0,0.55)',
+        background: 'rgba(0,0,0,0.6)',
+        backdropFilter: 'blur(3px)',
+        WebkitBackdropFilter: 'blur(3px)',
         display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
       }}
     >
@@ -261,18 +263,17 @@ export function LockModal({
         style={{
           width: '100%', maxWidth: 480,
           background: 'var(--bg-elevated)',
-          borderRadius: '20px 20px 0 0',
-          padding: '24px 20px 32px',
+          borderRadius: '18px 18px 0 0',
+          padding: '0 20px 32px',
         }}
       >
         {/* Handle bar */}
-        <div style={{
-          width: 36, height: 4, borderRadius: 2,
-          background: 'var(--border)', margin: '0 auto 20px',
-        }} />
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '10px 0 6px' }}>
+          <div style={{ width: 36, height: 4, borderRadius: 2, background: 'var(--border)' }} />
+        </div>
 
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 20, paddingTop: 8 }}>
           <div style={{
             width: 44, height: 44, borderRadius: 12, flexShrink: 0,
             background: 'var(--bg-card)',
@@ -295,10 +296,12 @@ export function LockModal({
               border: '1px solid var(--border)',
               background: 'transparent', color: 'var(--text-muted)',
               cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-              flexShrink: 0,
+              flexShrink: 0, transition: 'background var(--transition-fast)',
             }}
+            onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-hover)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
           >
-            <X size={14} />
+            <X size={16} />
           </button>
         </div>
 
@@ -316,7 +319,7 @@ export function LockModal({
             maxLength={isPasswordField ? 50 : 6}
             style={{
               width: '100%', padding: '14px 44px 14px 16px',
-              borderRadius: 12, fontSize: 20,
+              borderRadius: 'var(--radius-md)', fontSize: 20,
               letterSpacing: inputValue ? 6 : 0,
               border: `1.5px solid ${error ? 'var(--danger)' : 'var(--border-focus)'}`,
               background: 'var(--bg-input)', color: 'var(--text-primary)',
@@ -350,7 +353,7 @@ export function LockModal({
           disabled={loading || !inputValue}
           style={{
             width: '100%', padding: '14px',
-            borderRadius: 12, fontSize: 14, fontWeight: 700,
+            borderRadius: 'var(--radius-md)', fontSize: 14, fontWeight: 700,
             background: loading || !inputValue ? 'var(--bg-card)' : 'var(--accent)',
             color: loading || !inputValue ? 'var(--text-muted)' : '#fff',
             border: 'none', cursor: loading || !inputValue ? 'not-allowed' : 'pointer',

@@ -36,7 +36,7 @@ export function Toast() {
         role="alert"
         style={{
           position: 'fixed',
-          bottom: 16,    // tidak ada BottomNav lagi
+          bottom: 'calc(16px + env(safe-area-inset-bottom))',
           left: '50%',
           transform: 'translateX(-50%)',
           zIndex: 999,
@@ -44,11 +44,11 @@ export function Toast() {
           alignItems: 'center',
           gap: 10,
           padding: '10px 14px',
-          borderRadius: 12,
+          borderRadius: 'var(--radius-lg)',
           maxWidth: '88vw',
           background: 'var(--bg-elevated)',
           border: `1px solid ${colors.border}`,
-          boxShadow: `0 4px 24px rgba(0,0,0,0.4), 0 0 0 1px ${colors.border}22`,
+          boxShadow: `0 4px 24px rgba(0,0,0,0.4)`,
           animation: 'toast-in 220ms cubic-bezier(0.34,1.56,0.64,1)',
         }}
       >

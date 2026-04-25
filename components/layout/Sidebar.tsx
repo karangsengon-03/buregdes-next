@@ -73,7 +73,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         style={{
           position: 'fixed', inset: 0, zIndex: 40,
           background: 'rgba(0,0,0,0.6)',
-          backdropFilter: open ? 'blur(2px)' : 'none',
+          backdropFilter: open ? 'blur(3px)' : 'none',
           opacity: open ? 1 : 0,
           pointerEvents: open ? 'auto' : 'none',
           transition: 'opacity 280ms ease',
@@ -152,15 +152,16 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             onClick={onClose}
             aria-label="Tutup sidebar"
             style={{
-              width: 34, height: 34,
+              width: 36, height: 36,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              borderRadius: 8, color: 'var(--text-secondary)',
+              borderRadius: 9, color: 'var(--text-secondary)',
               background: 'transparent', border: 'none', cursor: 'pointer',
+              transition: 'background var(--transition-fast)',
             }}
             onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.07)'}
             onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
           >
-            <X size={17} />
+            <X size={16} />
           </button>
         </div>
 
@@ -185,17 +186,18 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                 width: '100%',
                 appearance: 'none',
                 padding: '8px 32px 8px 12px',
-                borderRadius: 8,
+                borderRadius: 'var(--radius-md)',
                 fontSize: 14, fontWeight: 700,
                 cursor: 'pointer', outline: 'none',
-                background: 'rgba(59,130,246,0.10)',
-                color: '#93C5FD',
-                border: '1px solid rgba(59,130,246,0.25)',
+                background: 'var(--accent-subtle)',
+                color: 'var(--text-accent)',
+                border: '1px solid var(--accent-border)',
                 fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)',
+                transition: 'border-color var(--transition-fast)',
               }}
             >
               {YEARS.map(y => (
-                <option key={y} value={y} style={{ background: '#0A1628', color: '#F1F5F9' }}>
+                <option key={y} value={y} style={{ background: 'var(--bg-sidebar)', color: 'var(--text-primary)' }}>
                   {y}
                 </option>
               ))}
@@ -205,7 +207,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
               style={{
                 position: 'absolute', right: 10, top: '50%',
                 transform: 'translateY(-50%)', pointerEvents: 'none',
-                color: '#93C5FD',
+                color: 'var(--text-accent)',
               }}
             />
           </div>
@@ -236,7 +238,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                   borderLeft: `3px solid ${isActive ? 'var(--accent)' : 'transparent'}`,
                   border: 'none', borderLeftWidth: 3, borderLeftStyle: 'solid',
                   borderLeftColor: isActive ? 'var(--accent)' : 'transparent',
-                  cursor: 'pointer', transition: 'background 120ms',
+                  cursor: 'pointer', transition: 'background var(--transition-fast)',
                 }}
                 onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}
                 onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent' }}
@@ -308,11 +310,11 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
           >
             <div style={{
-              width: 30, height: 30, borderRadius: 8,
+              width: 32, height: 32, borderRadius: 9,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              flexShrink: 0, background: 'rgba(255,255,255,0.06)',
+              flexShrink: 0, background: 'var(--sidebar-icon-bg)',
             }}>
-              <Printer size={14} style={{ color: 'var(--text-secondary)' }} />
+              <Printer size={15} style={{ color: 'var(--text-secondary)' }} />
             </div>
             <p style={{ fontSize: 13, fontWeight: 400, color: 'var(--sidebar-fg)', margin: 0 }}>
               Cetak
@@ -339,11 +341,11 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
           >
             <div style={{
-              width: 30, height: 30, borderRadius: 8,
+              width: 32, height: 32, borderRadius: 9,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              flexShrink: 0, background: 'rgba(255,255,255,0.06)',
+              flexShrink: 0, background: 'var(--sidebar-icon-bg)',
             }}>
-              <FileSpreadsheet size={14} style={{ color: 'var(--text-secondary)' }} />
+              <FileSpreadsheet size={15} style={{ color: 'var(--text-secondary)' }} />
             </div>
             <p style={{ fontSize: 13, fontWeight: 400, color: 'var(--sidebar-fg)', margin: 0 }}>
               Export / Backup
@@ -365,7 +367,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
               borderLeft: `3px solid ${isSettings ? 'var(--accent)' : 'transparent'}`,
               border: 'none', borderLeftWidth: 3, borderLeftStyle: 'solid',
               borderLeftColor: isSettings ? 'var(--accent)' : 'transparent',
-              cursor: 'pointer', transition: 'background 120ms',
+              cursor: 'pointer', transition: 'background var(--transition-fast)',
             }}
             onMouseEnter={e => { if (!isSettings) e.currentTarget.style.background = 'var(--sidebar-hover)' }}
             onMouseLeave={e => { if (!isSettings) e.currentTarget.style.background = 'transparent' }}
@@ -423,16 +425,17 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             onClick={handleLogout}
             style={{
               width: '100%',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
               padding: '9px',
-              borderRadius: 8, fontSize: 13, fontWeight: 600,
-              background: 'rgba(239,68,68,0.10)',
+              borderRadius: 'var(--radius-md)', fontSize: 13, fontWeight: 600,
+              background: 'var(--danger-subtle)',
               color: 'var(--danger)',
-              border: '1px solid rgba(239,68,68,0.20)',
+              border: '1px solid var(--danger-border)',
               cursor: 'pointer',
+              transition: 'background var(--transition-fast)',
             }}
             onMouseEnter={e => e.currentTarget.style.background = 'rgba(239,68,68,0.18)'}
-            onMouseLeave={e => e.currentTarget.style.background = 'rgba(239,68,68,0.10)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'var(--danger-subtle)'}
           >
             <LogOut size={14} />
             Keluar

@@ -51,8 +51,8 @@ export function ConfirmDialog({
         justifyContent: 'center',
         padding: 16,
         background: 'rgba(0,0,0,0.6)',
-        backdropFilter: 'blur(4px)',
-        WebkitBackdropFilter: 'blur(4px)',
+        backdropFilter: 'blur(3px)',
+        WebkitBackdropFilter: 'blur(3px)',
       }}
       onClick={onCancel}
     >
@@ -60,7 +60,7 @@ export function ConfirmDialog({
         style={{
           width: '100%',
           maxWidth: 360,
-          borderRadius: 16,
+          borderRadius: 'var(--radius-xl)',
           background: 'var(--bg-elevated)',
           border: '1px solid var(--border)',
           overflow: 'hidden',
@@ -80,17 +80,13 @@ export function ConfirmDialog({
         >
           <div
             style={{
-              width: 32,
-              height: 32,
-              borderRadius: 8,
-              background: 'rgba(239,68,68,0.15)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0,
+              width: 36, height: 36, borderRadius: 10,
+              background: 'var(--danger-subtle)',
+              border: '1px solid var(--danger-border)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
             }}
           >
-            <AlertTriangle size={16} style={{ color: 'var(--danger)' }} />
+            <AlertTriangle size={18} style={{ color: 'var(--danger)' }} />
           </div>
           <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', flex: 1 }}>
             {title}
@@ -98,19 +94,16 @@ export function ConfirmDialog({
           <button
             onClick={onCancel}
             style={{
-              width: 28,
-              height: 28,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: 6,
-              border: 'none',
-              background: 'transparent',
-              color: 'var(--text-muted)',
-              cursor: 'pointer',
+              width: 32, height: 32,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              borderRadius: 8, border: 'none',
+              background: 'transparent', color: 'var(--text-muted)', cursor: 'pointer',
+              transition: 'background var(--transition-fast)',
             }}
+            onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-hover)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
           >
-            <X size={15} />
+            <X size={16} />
           </button>
         </div>
 
@@ -133,16 +126,14 @@ export function ConfirmDialog({
             onClick={onCancel}
             disabled={loading}
             style={{
-              flex: 1,
-              padding: '10px',
-              borderRadius: 10,
-              fontSize: 13,
-              fontWeight: 600,
+              flex: 1, padding: '11px',
+              borderRadius: 'var(--radius-md)', fontSize: 14, fontWeight: 600,
               border: '1px solid var(--border)',
-              background: 'transparent',
-              color: 'var(--text-secondary)',
-              cursor: 'pointer',
+              background: 'transparent', color: 'var(--text-secondary)',
+              cursor: 'pointer', transition: 'background var(--transition-fast)',
             }}
+            onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-hover)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
           >
             {cancelLabel}
           </button>
@@ -150,19 +141,14 @@ export function ConfirmDialog({
             onClick={onConfirm}
             disabled={loading}
             style={{
-              flex: 1,
-              padding: '10px',
-              borderRadius: 10,
-              fontSize: 13,
-              fontWeight: 600,
+              flex: 1, padding: '11px',
+              borderRadius: 'var(--radius-md)', fontSize: 14, fontWeight: 600,
               border: 'none',
               background: loading ? 'var(--text-muted)' : 'var(--danger)',
               color: '#fff',
               cursor: loading ? 'not-allowed' : 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 6,
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              transition: 'background var(--transition-fast)',
             }}
           >
             {loading && (

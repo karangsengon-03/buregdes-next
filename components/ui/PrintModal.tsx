@@ -323,7 +323,8 @@ export function PrintModal({
         onClick={onClose}
         style={{
           position: 'fixed', inset: 0,
-          background: 'rgba(0,0,0,0.55)',
+          background: 'rgba(0,0,0,0.6)',
+          backdropFilter: 'blur(3px)',
           zIndex: 40,
           animation: 'fadeIn 180ms ease',
         }}
@@ -344,7 +345,7 @@ export function PrintModal({
         }}
       >
         {/* Handle bar */}
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '10px 0 4px' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '10px 0 6px' }}>
           <div style={{ width: 36, height: 4, borderRadius: 2, background: 'var(--border)' }} />
         </div>
 
@@ -357,7 +358,7 @@ export function PrintModal({
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{
               width: 36, height: 36, borderRadius: 10,
-              background: 'rgba(59,130,246,0.12)',
+              background: 'var(--accent-subtle)', border: '1px solid var(--accent-border)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <Printer size={18} style={{ color: 'var(--accent)' }} />
@@ -405,7 +406,7 @@ export function PrintModal({
                   onClick={() => setScope(opt.value)}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 12,
-                    padding: '12px 14px', borderRadius: 12, cursor: 'pointer',
+                    padding: '12px 14px', borderRadius: 'var(--radius-md)', cursor: 'pointer',
                     border: `1.5px solid ${isActive ? 'var(--accent)' : 'var(--border)'}`,
                     background: isActive ? 'var(--accent-subtle)' : 'var(--bg-card)',
                     transition: 'all 150ms',
@@ -442,7 +443,7 @@ export function PrintModal({
                     fontSize: 11, fontWeight: 700,
                     fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)',
                     padding: '2px 8px', borderRadius: 6,
-                    background: isActive ? 'rgba(59,130,246,0.18)' : 'var(--bg-elevated)',
+                    background: isActive ? 'var(--accent-subtle)' : 'var(--bg-elevated)',
                     color: isActive ? 'var(--accent)' : 'var(--text-muted)',
                     flexShrink: 0,
                   }}>
@@ -485,8 +486,8 @@ export function PrintModal({
           {!desaInfo.desa && (
             <div style={{
               padding: '10px 12px', borderRadius: 10,
-              background: 'rgba(245,158,11,0.08)',
-              border: '1px solid rgba(245,158,11,0.25)',
+              background: 'var(--warning-subtle)',
+              border: '1px solid var(--warning-border)',
               marginBottom: 16,
             }}>
               <p style={{ fontSize: 12, color: 'var(--warning)', margin: 0, lineHeight: 1.5, display: 'flex', alignItems: 'flex-start', gap: 6 }}>
@@ -507,7 +508,7 @@ export function PrintModal({
             style={{
               width: '100%',
               padding: '14px',
-              borderRadius: 12,
+              borderRadius: 'var(--radius-md)',
               border: 'none',
               background: targetRows.length === 0 ? 'var(--border)' : 'var(--accent)',
               color: targetRows.length === 0 ? 'var(--text-muted)' : '#fff',

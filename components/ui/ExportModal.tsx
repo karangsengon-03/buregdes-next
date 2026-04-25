@@ -177,7 +177,7 @@ export function ExportModal({ open, book, rows, year, onClose }: ExportModalProp
     {
       id: 'excel-single',
       icon: <FileSpreadsheet size={17} />,
-      color: 'var(--success)', bg: 'rgba(16,185,129,0.12)',
+      color: 'var(--success)', bg: 'var(--success-subtle)',
       title: 'Excel — Buku Ini',
       sub: `${book.kode} · ${rows.length} baris`,
     },
@@ -205,7 +205,7 @@ export function ExportModal({ open, book, rows, year, onClose }: ExportModalProp
     {
       id: 'restore',
       icon: <Upload size={17} />,
-      color: 'var(--warning)', bg: 'rgba(245,158,11,0.12)',
+      color: 'var(--warning)', bg: 'var(--warning-subtle)',
       title: 'Restore JSON',
       sub: 'Upload file backup ke RTDB',
     },
@@ -213,7 +213,7 @@ export function ExportModal({ open, book, rows, year, onClose }: ExportModalProp
 
   return (
     <>
-      <div onClick={handleClose} style={{ position: 'fixed', inset: 0, zIndex: 40, background: 'rgba(0,0,0,0.55)' }} />
+      <div onClick={handleClose} style={{ position: 'fixed', inset: 0, zIndex: 40, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(3px)', WebkitBackdropFilter: 'blur(3px)' }} />
 
       <div style={{
         position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50,
@@ -226,7 +226,7 @@ export function ExportModal({ open, book, rows, year, onClose }: ExportModalProp
         display: 'flex', flexDirection: 'column',
       }}>
         {/* Handle */}
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '10px 0 4px', flexShrink: 0 }}>
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '10px 0 6px', flexShrink: 0 }}>
           <div style={{ width: 36, height: 4, borderRadius: 2, background: 'var(--border)' }} />
         </div>
 
@@ -238,10 +238,11 @@ export function ExportModal({ open, book, rows, year, onClose }: ExportModalProp
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             {panel && (
               <button onClick={() => { setPanel(null); reset() }} style={{
-                width: 28, height: 28, borderRadius: 7, border: 'none',
+                width: 32, height: 32, borderRadius: 8, border: 'none',
                 background: 'var(--bg-card)', color: 'var(--text-muted)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 cursor: 'pointer', fontSize: 18, fontWeight: 700,
+                transition: 'background var(--transition-fast)',
               }}>‹</button>
             )}
             <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>
@@ -254,11 +255,15 @@ export function ExportModal({ open, book, rows, year, onClose }: ExportModalProp
             </p>
           </div>
           <button onClick={handleClose} style={{
-            width: 30, height: 30, borderRadius: 8, border: 'none',
-            background: 'var(--bg-card)', color: 'var(--text-muted)',
+            width: 32, height: 32, borderRadius: 8, border: 'none',
+            background: 'transparent', color: 'var(--text-muted)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-          }}>
-            <X size={14} />
+            transition: 'background var(--transition-fast)',
+          }}
+            onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-hover)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+          >
+            <X size={16} />
           </button>
         </div>
 
@@ -276,7 +281,7 @@ export function ExportModal({ open, book, rows, year, onClose }: ExportModalProp
                   cursor: 'pointer', textAlign: 'left', width: '100%',
                 }}>
                   <div style={{
-                    width: 36, height: 36, borderRadius: 9, background: item.bg,
+                    width: 36, height: 36, borderRadius: 'var(--radius-md)', background: item.bg,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     flexShrink: 0, color: item.color,
                   }}>{item.icon}</div>
@@ -319,8 +324,8 @@ export function ExportModal({ open, book, rows, year, onClose }: ExportModalProp
               <InfoRow label="Tahun" value={`TA ${year}`} />
               <InfoRow label="Desa"  value={desaInfo.desa ? `Desa ${desaInfo.desa}` : '(belum diisi)'} />
               <div style={{
-                marginTop: 12, padding: '10px 12px', borderRadius: 9,
-                background: 'var(--accent-subtle)', border: '1px solid rgba(59,130,246,0.25)',
+                marginTop: 12, padding: '10px 12px', borderRadius: 'var(--radius-md)',
+                background: 'var(--accent-subtle)', border: '1px solid var(--accent-border)',
                 fontSize: 12, color: 'var(--accent)',
               }}>
                 Semua 6 buku akan diekspor ke 1 file Excel dengan 6 sheet.
@@ -360,8 +365,8 @@ export function ExportModal({ open, book, rows, year, onClose }: ExportModalProp
               <InfoRow label="Sumber" value={`data/TA${year} + desaInfo`} />
               <InfoRow label="Format" value="JSON (.json)" />
               <div style={{
-                marginTop: 12, padding: '10px 12px', borderRadius: 9,
-                background: 'var(--accent-subtle)', border: '1px solid rgba(59,130,246,0.25)',
+                marginTop: 12, padding: '10px 12px', borderRadius: 'var(--radius-md)',
+                background: 'var(--accent-subtle)', border: '1px solid var(--accent-border)',
                 fontSize: 12, color: 'var(--accent)',
               }}>
                 File backup berisi seluruh data tabel dan info desa. Simpan di tempat aman.
@@ -381,8 +386,8 @@ export function ExportModal({ open, book, rows, year, onClose }: ExportModalProp
           {panel === 'restore' && (
             <>
               <div style={{
-                padding: '10px 12px', borderRadius: 9,
-                background: 'rgba(245,158,11,0.10)', border: '1px solid rgba(245,158,11,0.25)',
+                padding: '10px 12px', borderRadius: 'var(--radius-md)',
+                background: 'var(--warning-subtle)', border: '1px solid var(--warning-border)',
                 fontSize: 12, color: 'var(--warning)',
                 display: 'flex', gap: 8, alignItems: 'flex-start',
               }}>
@@ -397,8 +402,8 @@ export function ExportModal({ open, book, rows, year, onClose }: ExportModalProp
 
               {state === 'done' && restoreInfo && (
                 <div style={{
-                  marginTop: 12, padding: '10px 12px', borderRadius: 9,
-                  background: 'rgba(16,185,129,0.10)', border: '1px solid rgba(16,185,129,0.25)',
+                  marginTop: 12, padding: '10px 12px', borderRadius: 'var(--radius-md)',
+                  background: 'var(--success-subtle)', border: '1px solid var(--success-border)',
                   fontSize: 12, color: 'var(--success)',
                   display: 'flex', gap: 8, alignItems: 'flex-start',
                 }}>
@@ -420,8 +425,8 @@ export function ExportModal({ open, book, rows, year, onClose }: ExportModalProp
                 disabled={state === 'loading'}
                 style={{
                   width: '100%', marginTop: 14, padding: '12px 16px',
-                  borderRadius: 11, border: '1px solid rgba(245,158,11,0.35)',
-                  background: 'rgba(245,158,11,0.10)',
+                  borderRadius: 'var(--radius-md)', border: '1px solid var(--warning-border)',
+                  background: 'var(--warning-subtle)',
                   color: state === 'loading' ? 'var(--text-muted)' : 'var(--warning)',
                   fontSize: 14, fontWeight: 700,
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
@@ -445,8 +450,8 @@ export function ExportModal({ open, book, rows, year, onClose }: ExportModalProp
 function EmptyWarning() {
   return (
     <div style={{
-      marginTop: 12, padding: '10px 12px', borderRadius: 9,
-      background: 'rgba(245,158,11,0.10)', border: '1px solid rgba(245,158,11,0.25)',
+      marginTop: 12, padding: '10px 12px', borderRadius: 'var(--radius-md)',
+      background: 'var(--warning-subtle)', border: '1px solid var(--warning-border)',
       fontSize: 12, color: 'var(--warning)',
     }}>
       Buku ini belum memiliki data. File akan kosong.
@@ -457,8 +462,8 @@ function EmptyWarning() {
 function ErrorBanner({ msg }: { msg: string }) {
   return (
     <div style={{
-      marginTop: 12, padding: '10px 12px', borderRadius: 9,
-      background: 'rgba(239,68,68,0.10)', border: '1px solid rgba(239,68,68,0.25)',
+      marginTop: 12, padding: '10px 12px', borderRadius: 'var(--radius-md)',
+      background: 'var(--danger-subtle)', border: '1px solid var(--danger-border)',
       fontSize: 12, color: 'var(--danger)',
     }}>
       {msg}
@@ -482,7 +487,7 @@ function ExportBtn({
       disabled={state === 'loading' || state === 'done' || disabled}
       style={{
         width: '100%', marginTop: 14, padding: '12px 16px',
-        borderRadius: 11, border: 'none',
+        borderRadius: 'var(--radius-md)', border: 'none',
         background: state === 'done' ? 'var(--success)' : 'var(--accent)',
         color: '#fff', fontSize: 14, fontWeight: 700,
         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,

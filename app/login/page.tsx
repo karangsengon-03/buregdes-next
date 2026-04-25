@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Eye, EyeOff, Sun, Moon, LogIn, ArrowRight, RefreshCw, Loader2 } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { loadSession, getSavedPassword, getTheme, setTheme } from '@/lib/session'
+import { APP_VERSION } from '@/hooks/useSettings'
 
 export default function LoginPage() {
   const router  = useRouter()
@@ -66,13 +67,13 @@ export default function LoginPage() {
     return (
       <div style={{
         minHeight: '100dvh',
-        background: 'linear-gradient(145deg, #0A1628 0%, #0D1B2A 55%, #1B2B3E 100%)',
+        background: 'var(--bg-app)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
         <div style={{
           width: 36, height: 36, borderRadius: '50%',
-          border: '3px solid rgba(59,130,246,0.25)',
-          borderTopColor: '#3B82F6',
+          border: '3px solid var(--accent-border)',
+          borderTopColor: 'var(--accent)',
           animation: 'spin 0.8s linear infinite',
         }} />
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
@@ -100,7 +101,7 @@ export default function LoginPage() {
             </div>
 
             <div className="card-brand">BuRegDes</div>
-            <div className="card-brand-ver">Next · v1.0</div>
+            <div className="card-brand-ver">{`Next · v${APP_VERSION}`}</div>
             <div className="card-sub">Buku Register Administrasi Desa</div>
             <div className="card-desa">
               Desa Karang Sengon<br />
@@ -149,7 +150,7 @@ export default function LoginPage() {
             </div>
 
             <div className="card-brand">BuRegDes</div>
-            <div className="card-brand-ver">Next · v1.0</div>
+            <div className="card-brand-ver">{`Next · v${APP_VERSION}`}</div>
             <div className="card-sub">Buku Register Administrasi Desa</div>
             <div className="card-desa">
               Desa Karang Sengon<br />
@@ -230,7 +231,7 @@ export default function LoginPage() {
       <style jsx>{`
         .login-screen {
           min-height: 100dvh;
-          background: linear-gradient(145deg, #0A1628 0%, #0D1B2A 55%, #1B2B3E 100%);
+          background: var(--bg-app);
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -260,7 +261,7 @@ export default function LoginPage() {
           inset: 0;
           border-radius: 50%;
           border: 2.5px solid transparent;
-          border-top-color: #3B82F6;
+          border-top-color: var(--accent);
           animation: spin 1s linear infinite;
         }
         .loading-logo-text {
@@ -271,31 +272,31 @@ export default function LoginPage() {
           justify-content: center;
           font-size: 20px;
           font-weight: 800;
-          color: #F1F5F9;
+          color: var(--text-primary);
           letter-spacing: 1px;
         }
         .loading-brand-text {
           font-size: 20px;
           font-weight: 800;
-          color: #F1F5F9;
+          color: var(--text-primary);
           letter-spacing: 2px;
         }
         .loading-sub-text {
           font-size: 11px;
-          color: #475569;
+          color: var(--text-muted);
           letter-spacing: 3px;
           text-transform: uppercase;
           margin-bottom: 16px;
         }
         .loading-spinner-icon {
           width: 24px; height: 24px;
-          color: #3B82F6;
+          color: var(--accent);
           animation: spin 1s linear infinite;
           margin-bottom: 20px;
         }
         .loading-desa-text {
           font-size: 11px;
-          color: #475569;
+          color: var(--text-muted);
           text-align: center;
         }
 
@@ -308,17 +309,17 @@ export default function LoginPage() {
           border-radius: 50%;
           background: rgba(255,255,255,0.08);
           border: 1px solid rgba(255,255,255,0.12);
-          color: #94A3B8;
+          color: var(--text-secondary);
           cursor: pointer;
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: background 0.2s, color 0.2s;
+          transition: background var(--transition-fast), color var(--transition-fast);
           z-index: 100;
         }
         .btn-theme-corner:hover {
           background: rgba(255,255,255,0.14);
-          color: #F1F5F9;
+          color: var(--text-primary);
         }
 
         /* Wrap */
@@ -458,18 +459,18 @@ export default function LoginPage() {
           padding: 4px;
           display: flex;
           align-items: center;
-          transition: color 0.2s;
+          transition: color var(--transition-fast);
         }
         .btn-eye:hover { color: var(--text-primary); }
 
         /* Error */
         .err-box {
-          background: rgba(239,68,68,0.1);
-          border: 1px solid rgba(239,68,68,0.3);
+          background: var(--danger-subtle);
+          border: 1px solid var(--danger-border);
           border-radius: 8px;
           padding: 10px 14px;
           font-size: 13px;
-          color: #EF4444;
+          color: var(--danger);
           margin-bottom: 14px;
         }
 
@@ -492,9 +493,9 @@ export default function LoginPage() {
         }
         .login-copy {
           text-align: center;
-          font-size: 10px;
+          font-size: 11px;
           color: var(--text-muted);
-          margin-top: 6px;
+          margin-top: 4px;
           opacity: 0.6;
         }
 
